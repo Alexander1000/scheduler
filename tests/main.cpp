@@ -9,6 +9,9 @@ class AssertDistributionNotExists
 class AssertItemNotFoundInBucket
 {};
 
+class AssertUnExpectedItemExists
+{};
+
 CppUnitTest::TestCase* testSchedule_ValidData_Positive()
 {
     CppUnitTest::TestCase* t = nullptr;
@@ -101,6 +104,42 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
                     throw new AssertItemNotFoundInBucket;
                 }
                 i++;
+            }
+
+            // inverted search
+            if (itDistr->second != nullptr) {
+                i = 0;
+                while (itDistr->second[i] != 0) {
+                    int curItemId = itDistr->second[i];
+                    bool found = false;
+                    if (itExpDistribution->second != nullptr) {
+                        int j = 0;
+                        while (itExpDistribution->second[j] != 0) {
+                            if (curItemId == itExpDistribution->second[j]) {
+                                found = true;
+                                break;
+                            }
+                            j++;
+                        }
+                    }
+
+                    if (!found) {
+                        std::cout << "Not expected item #" << curItemId << " exists in bucket #" << itDistr->first
+                                  << std::endl;
+                        if (itExpDistribution->second != nullptr) {
+                            std::cout << "Expected list items in bucket #" << itExpDistribution->first << ": "
+                                      << std::endl;
+                            int j = 0;
+                            while (itExpDistribution->second[j] != 0) {
+                                std::cout << "#" << itDistr->second[j] << std::endl;
+                                j++;
+                            }
+                        }
+
+                        throw new AssertUnExpectedItemExists;
+                    }
+                    i++;
+                }
             }
         } else {
             // not exist
