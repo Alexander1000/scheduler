@@ -8,15 +8,46 @@ include_directories(
     include
 )
 
-set(SCHEDULER_SOURCES
-    src/main.cpp
+set(SCHEDULER_SHARED_SOURCES
     src/scheduler/resource.cpp
     src/scheduler/item.cpp
     src/scheduler/bucket.cpp
     src/scheduler/scheduler.cpp
 )
 
+set(SCHEDULER_SOURCES
+    src/main.cpp
+    ${SCHEDULER_SHARED_SOURCES}
+)
+
 add_executable(
     ${PROJECT_NAME} src/main.cpp
     ${SCHEDULER_SOURCES}
+)
+
+#############
+### TESTS ###
+#############
+
+project(scheduler-test)
+
+set(CMAKE_BUILD_TYPE Debug)
+
+set(SCHEDULER_SOURCES_TEST
+    tests/main.cpp
+    ${SCHEDULER_SHARED_SOURCES}
+)
+
+include_directories(include)
+
+find_library(CPP_UNIT_TEST libcpp-unit-test.a)
+message(STATUS "Found cpp-unit-test: ${CPP_UNIT_TEST}")
+
+add_executable(
+    ${PROJECT_NAME} tests/main.cpp
+    ${SCHEDULER_SOURCES_TEST}
+)
+
+target_link_libraries(${PROJECT_NAME}
+    ${CPP_UNIT_TEST}
 )
