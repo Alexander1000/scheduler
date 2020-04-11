@@ -12,6 +12,7 @@ set(SCHEDULER_SOURCES
     src/main.cpp
     src/scheduler/resource.cpp
     src/scheduler/item.cpp
+    src/scheduler/bucket.cpp
 )
 
 add_executable(

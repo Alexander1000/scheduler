@@ -1,15 +1,1 @@
-#include <map>
-#include <list>
-
-class Bucket
-{
-private:
-    // identifier of bucket
-    int id;
-
-    // relation: resource id -> capacity of resource
-    std::map<int, int> capacity;
-
-    // list items
-    std::list<*Item> items;
-};
+#include <scheduler.h>
