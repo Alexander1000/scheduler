@@ -14,4 +14,10 @@ namespace Scheduler
     {
         return this->resources;
     }
+
+    void Item::SetBucket(int bucketId)
+    {
+        this->bucketId = new int;
+        *this->bucketId = bucketId;
+    }
 }

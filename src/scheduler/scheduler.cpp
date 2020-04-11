@@ -22,6 +22,7 @@ namespace Scheduler
             Bucket* bucket = *it;
             if (bucket->HasCapacityForItem(item)) {
                 bucket->AddItem(item);
+                item->SetBucket(bucket->GetID());
                 break;
             }
         }

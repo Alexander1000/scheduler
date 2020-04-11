@@ -9,6 +9,7 @@ namespace Scheduler {
     public:
         Item(int id, std::map<int, int>* resources);
         std::map<int, int>* GetResources();
+        void SetBucket(int bucketId);
     private:
         // identifier of item
         int id;
