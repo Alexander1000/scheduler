@@ -1,6 +1,11 @@
+#include <map>
+
 class Item
 {
 private:
-    // identifier item
+    // identifier of item
     int id;
+
+    // resources for item
+    std::map<int, int> resources;
 };

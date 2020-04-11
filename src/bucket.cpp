@@ -3,6 +3,9 @@
 class Bucket
 {
 private:
+    // identifier of bucket
+    int id;
+
     // relation: resource id -> capacity of resource
-    capacity std::map<int, int>;
+    std::map<int, int> capacity;
 };
