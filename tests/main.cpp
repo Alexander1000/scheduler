@@ -1,6 +1,7 @@
 #include <cpp-unit-test.h>
 #include <scheduler.h>
 #include <map>
+#include <iostream>
 
 class AssertDistributionNotExists
 {};
@@ -87,6 +88,7 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
                 }
 
                 if (!found) {
+                    std::cout << "Expected item #" << curItemId << " exists in bucket #" << itExpDistribution->first << std::endl;
                     throw new AssertItemNotFoundInBucket;
                 }
                 i++;
