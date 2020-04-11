@@ -48,7 +48,39 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.ScheduleItem(item2);
     }
 
-    s.__GetDistributionItems();
+    // make expected distribution
+    std::map<int, int*>* expectedDistribution;
+    expectedDistribution = new std::map<int, int*>;
+    expectedDistribution->emplace(1, nullptr);
+
+    // distribution items in buckets
+    std::map<int, int*>* distribution = s.__GetDistributionItems();
+
+    // assertions
+    std::map<int, int*>::iterator itExpDistribution;
+    for (itExpDistribution = expectedDistribution->begin(); itExpDistribution != expectedDistribution->end(); ++itExpDistribution) {
+        std::map<int, int*>::iterator itDistr = distribution->find(itExpDistribution->first);
+        if (itDistr != distribution->end() && itExpDistribution->second != nullptr) {
+            int i = 0;
+            while (itExpDistribution->second[i] != 0) {
+                int curItemId = itExpDistribution->second[i];
+                bool found = false;
+                if (itDistr->second != nullptr) {
+                    int j = 0;
+                    while (itDistr->second[j] != 0) {
+                        if (curItemId == itDistr->second[j]) {
+                            found = true;
+                            break;
+                        }
+                        j++;
+                    }
+                }
+                i++;
+            }
+        } else {
+            // not exist
+        }
+    }
 
     t->finish();
     return t;
