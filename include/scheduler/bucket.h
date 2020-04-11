@@ -12,6 +12,7 @@ namespace Scheduler {
         Bucket(int id, std::map<int, int>* capacity);
         int GetID();
         bool HasCapacityForItem(Item* item);
+        void AddItem(Item* item);
     private:
         // identifier of bucket
         int id;

@@ -53,6 +53,24 @@ namespace Scheduler
         return hasResources;
     }
 
+    void Bucket::AddItem(Item* item)
+    {
+        std::map<int, int>::iterator it;
+
+        for (it = item->GetResources()->begin(); it != item->GetResources()->end(); ++it) {
+            std::map<int, int>::iterator itElement;
+            itElement = this->usage->find(it->first);
+
+            // update usage
+            this->usage->emplace(it->first, itElement->second + it->second);
+
+            // update usage
+            this->left->emplace(it->first, itElement->second - it->second);
+        }
+
+        this->items->push_front(item);
+    }
+
     void Bucket::calculate()
     {
     }
