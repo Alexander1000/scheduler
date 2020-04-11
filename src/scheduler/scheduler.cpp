@@ -20,6 +20,9 @@ namespace Scheduler
         std::list<Bucket*>::iterator it;
         for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
             Bucket* bucket = *it;
+            if (bucket->HasCapacityForItem(item)) {
+                break;
+            }
         }
     }
 }
