@@ -14,4 +14,9 @@ namespace Scheduler
     {
         this->bucket_pool->push_front(bucket);
     }
+
+    void Scheduler::ScheduleItem(Item * item)
+    {
+        return;
+    }
 }

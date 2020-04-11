@@ -13,6 +13,8 @@ namespace Scheduler {
         Scheduler();
         // add bucket to pool
         void AddBucket(Bucket* bucket);
+        // schedule item
+        void ScheduleItem(Item* item);
     private:
         // pool of resources
         std::list<Resource*>* resource_pool;

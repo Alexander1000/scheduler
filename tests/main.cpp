@@ -30,6 +30,13 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.AddBucket(bucket);
     }
 
+    std::map<int, int> itemR1;
+    itemR1.insert(std::pair<int, int>(rCpu, 5));
+    itemR1.insert(std::pair<int, int>(rMemory, 1000));
+    Scheduler::Item item1(1, &itemR1);
+
+    s.ScheduleItem(&item1);
+
     t->finish();
     return t;
 }
