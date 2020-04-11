@@ -12,7 +12,7 @@ namespace Scheduler
 
     void Scheduler::AddBucket(Bucket* bucket)
     {
-        this->bucket_pool->push_front(bucket);
+        this->bucket_pool->push_back(bucket);
     }
 
     void Scheduler::ScheduleItem(Item* item)

@@ -56,14 +56,15 @@ namespace Scheduler
         std::map<int, int>::iterator it;
 
         for (it = item->GetResources()->begin(); it != item->GetResources()->end(); ++it) {
-            std::map<int, int>::iterator itElement;
-            itElement = this->usage->find(it->first);
+            std::map<int, int>::iterator itElementUsage, itElementLeft;
 
             // update usage
-            this->usage->emplace(it->first, itElement->second + it->second);
+            itElementUsage = this->usage->find(it->first);
+            itElementUsage->second += it->second;
 
-            // update usage
-            this->left->emplace(it->first, itElement->second - it->second);
+            // left resources
+            itElementLeft = this->left->find(it->first);
+            itElementLeft->second -= it->second;
         }
 
         this->items->push_front(item);

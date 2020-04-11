@@ -33,7 +33,7 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         resourceMap->insert(std::pair<int, int>(rGpu, 4));
 
         Scheduler::Bucket* bucket;
-        bucket = new Scheduler::Bucket(i, resourceMap);
+        bucket = new Scheduler::Bucket(i + 1, resourceMap);
         s.AddBucket(bucket);
     }
 
@@ -51,7 +51,7 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         itemR2->insert(std::pair<int, int>(rMemory, 10000));
         itemR2->insert(std::pair<int, int>(rGpu, 4));
         Scheduler::Item* item2;
-        item2 = new Scheduler::Item(i + 1, itemR2);
+        item2 = new Scheduler::Item(i + 2, itemR2);
         s.ScheduleItem(item2);
     }
 
