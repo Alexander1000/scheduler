@@ -1,4 +1,5 @@
 #include <map>
+#include <list>
 
 class Bucket
 {
@@ -8,4 +9,6 @@ private:
 
     // relation: resource id -> capacity of resource
     std::map<int, int> capacity;
+
+    std::list<*Item> items;
 };

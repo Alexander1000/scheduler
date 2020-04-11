@@ -8,4 +8,6 @@ private:
 
     // resources for item
     std::map<int, int> resources;
+
+    int* bucketId;
 };
