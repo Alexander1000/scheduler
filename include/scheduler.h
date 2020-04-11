@@ -2,5 +2,6 @@
 #define H_SCHEDULER_INCLUDED
 
 #include <scheduler/resources.h>
+#include <scheduler/item.h>
 
 #endif
