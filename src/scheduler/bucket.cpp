@@ -9,4 +9,9 @@ namespace Scheduler
         this->capacity = capacity;
         this->items = new std::list<Item*>;
     }
+
+    int Bucket::GetID()
+    {
+        return this->id;
+    }
 }

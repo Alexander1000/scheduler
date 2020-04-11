@@ -9,4 +9,9 @@ namespace Scheduler
         this->bucket_pool = new std::list<Bucket*>;
         this->pending_items = new std::list<Item*>;
     }
+
+    void Scheduler::AddBucket(Bucket* bucket)
+    {
+        this->bucket_pool->push_front(bucket);
+    }
 }
