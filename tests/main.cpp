@@ -60,7 +60,7 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     expectedDistribution = new std::map<int, int*>;
     int* items1;
     items1 = new int[10];
-    memset(items1, 0, 10);
+    memset(items1, 0, sizeof(int) * 10);
     items1[0] = 1;
     expectedDistribution->emplace(1, items1);
 
