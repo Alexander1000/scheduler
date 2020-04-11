@@ -11,6 +11,7 @@ namespace Scheduler {
     public:
         Bucket(int id, std::map<int, int>* capacity);
         int GetID();
+        bool HasCapacityForItem(Item* item);
     private:
         // identifier of bucket
         int id;
@@ -18,8 +19,16 @@ namespace Scheduler {
         // relation: resource id -> capacity of resource
         std::map<int, int>* capacity;
 
+        // cache, usage of resources (calculated parameters)
+        std::map<int, int>* usage;
+
+        // cache, left resources (calculated parameters)
+        std::map<int, int>* left;
+
         // list items
         std::list<Item*>* items;
+
+        void calculate();
     };
 
 }
