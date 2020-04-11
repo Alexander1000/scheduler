@@ -89,6 +89,15 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
 
                 if (!found) {
                     std::cout << "Expected item #" << curItemId << " exists in bucket #" << itExpDistribution->first << std::endl;
+                    if (itDistr->second != nullptr) {
+                        std::cout << "List items in bucket #" << itExpDistribution->first << ": " << std::endl;
+                        int j = 0;
+                        while (itDistr->second[j] != 0) {
+                            std::cout << "#" << itDistr->second[j] << std::endl;
+                            j++;
+                        }
+                    }
+
                     throw new AssertItemNotFoundInBucket;
                 }
                 i++;
