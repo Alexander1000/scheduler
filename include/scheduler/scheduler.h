@@ -11,6 +11,7 @@ namespace Scheduler {
     class Scheduler {
     public:
         Scheduler();
+        // add bucket to pool
         void AddBucket(Bucket* bucket);
     private:
         // pool of resources

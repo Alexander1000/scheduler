@@ -4,6 +4,7 @@
 namespace Scheduler {
     // resource
     class Resource {
+    public:
         Resource(int id, char *name);
         Resource(int id, const char *name);
     private:

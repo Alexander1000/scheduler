@@ -6,6 +6,7 @@
 namespace Scheduler {
     // item
     class Item {
+    public:
         Item(int id, std::map<int, int>* resources);
     private:
         // identifier of item
