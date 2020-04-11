@@ -10,5 +10,6 @@ private:
     // relation: resource id -> capacity of resource
     std::map<int, int> capacity;
 
+    // list items
     std::list<*Item> items;
 };
