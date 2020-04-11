@@ -2,6 +2,7 @@
 #define H_SCHEDULER_SCHEDULER_INCLUDED
 
 #include <list>
+#include <map>
 #include <scheduler/resources.h>
 #include <scheduler/bucket.h>
 #include <scheduler/item.h>
@@ -15,6 +16,8 @@ namespace Scheduler {
         void AddBucket(Bucket* bucket);
         // schedule item
         void ScheduleItem(Item* item);
+
+        std::map<int, int*>* __GetDistributionItems();
     private:
         // pool of resources
         std::list<Resource*>* resource_pool;

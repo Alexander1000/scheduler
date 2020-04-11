@@ -33,4 +33,26 @@ namespace Scheduler
             this->pending_items->push_front(item);
         }
     }
+
+    std::map<int, int*>* Scheduler::__GetDistributionItems()
+    {
+        std::map<int, int*>* distribution;
+        distribution = new std::map<int, int*>;
+        std::list<Bucket*>::iterator it;
+        for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
+            Bucket* bucket = *it;
+            int* items;
+            items = new int[bucket->GetItems()->size()];
+
+            std::list<Item*>::iterator itElement;
+            int i = 0;
+            for (itElement = bucket->GetItems()->begin(); itElement != bucket->GetItems()->end(); ++itElement) {
+                items[i] = (*itElement)->GetId();
+                i++;
+            }
+
+            distribution->emplace(bucket->GetID(), items);
+        }
+        return distribution;
+    }
 }

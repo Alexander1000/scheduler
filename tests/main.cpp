@@ -48,6 +48,8 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.ScheduleItem(item2);
     }
 
+    s.__GetDistributionItems();
+
     t->finish();
     return t;
 }

@@ -68,4 +68,9 @@ namespace Scheduler
 
         this->items->push_front(item);
     }
+
+    std::list<Item*>* Bucket::GetItems()
+    {
+        return this->items;
+    }
 }

@@ -10,6 +10,11 @@ namespace Scheduler
         this->bucketId = nullptr;
     }
 
+    int Item::GetId()
+    {
+        return this->id;
+    }
+
     std::map<int, int>* Item::GetResources()
     {
         return this->resources;
