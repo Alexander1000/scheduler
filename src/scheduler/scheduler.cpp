@@ -15,8 +15,11 @@ namespace Scheduler
         this->bucket_pool->push_front(bucket);
     }
 
-    void Scheduler::ScheduleItem(Item * item)
+    void Scheduler::ScheduleItem(Item* item)
     {
-        return;
+        std::list<Bucket*>::iterator it;
+        for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
+            Bucket* bucket = *it;
+        }
     }
 }
