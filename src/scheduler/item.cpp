@@ -1,4 +1,5 @@
 #include <scheduler.h>
+#include <map>
 
 namespace Scheduler
 {
@@ -7,5 +8,10 @@ namespace Scheduler
         this->id = id;
         this->resources = resources;
         this->bucketId = nullptr;
+    }
+
+    std::map<int, int>* Item::GetResources()
+    {
+        return this->resources;
     }
 }

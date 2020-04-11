@@ -12,6 +12,14 @@ namespace Scheduler
         this->usage = new std::map<int, int>;
         this->left = new std::map<int, int>;
 
+        std::map<int, int>::iterator it;
+        for (it = this->capacity->begin(); it != this->capacity->end(); ++it) {
+            // zero usage
+            this->usage->insert(std::pair<int, int>(it->first, 0));
+            // left all resources
+            this->left->insert(std::pair<int, int>(it->first, it->second));
+        }
+
         this->items = new std::list<Item*>;
 
         this->calculate();

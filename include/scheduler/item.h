@@ -8,6 +8,7 @@ namespace Scheduler {
     class Item {
     public:
         Item(int id, std::map<int, int>* resources);
+        std::map<int, int>* GetResources();
     private:
         // identifier of item
         int id;
