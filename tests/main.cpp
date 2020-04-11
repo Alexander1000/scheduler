@@ -61,10 +61,13 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     // make expected distribution
     std::map<int, int*>* expectedDistribution;
     expectedDistribution = new std::map<int, int*>;
+
+    // first data-set for bucket #1
     int* items1;
     items1 = new int[10];
     memset(items1, 0, sizeof(int) * 10);
     items1[0] = 1;
+    items1[1] = 2;
     expectedDistribution->emplace(1, items1);
 
     // distribution items in buckets
