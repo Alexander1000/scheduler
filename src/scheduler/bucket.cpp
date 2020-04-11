@@ -32,7 +32,25 @@ namespace Scheduler
 
     bool Bucket::HasCapacityForItem(Item* item)
     {
-        return true;
+        std::map<int, int>::iterator it;
+        bool hasResources = true;
+        for (it = item->GetResources()->begin(); it != item->GetResources()->end(); ++it) {
+            std::map<int, int>::iterator itElement;
+            itElement = this->left->find(it->first);
+            if (itElement != this->left->end()) {
+                // found key
+                if (itElement->second < it->second) {
+                    // resources required more than exists
+                    hasResources = false;
+                    break;
+                }
+            } else {
+                // resource not exists in this bucket
+                hasResources = false;
+                break;
+            }
+        }
+        return hasResources;
     }
 
     void Bucket::calculate()
