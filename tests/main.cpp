@@ -18,8 +18,11 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     for (int i = 0; i < 10; i++) {
         std::map<int, int>* resourceMap;
         resourceMap = new std::map<int, int>;
+        // 64 cpu
         resourceMap->insert(std::pair<int, int>(rCpu, 64));
+        // 200 Gb memory
         resourceMap->insert(std::pair<int, int>(rMemory, 200000));
+        // 4 gpu
         resourceMap->insert(std::pair<int, int>(rGpu, 4));
 
         Scheduler::Bucket* bucket;
