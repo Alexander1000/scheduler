@@ -28,8 +28,6 @@ namespace Scheduler {
 
         // list items
         std::list<Item*>* items;
-
-        void calculate();
     };
 
 }

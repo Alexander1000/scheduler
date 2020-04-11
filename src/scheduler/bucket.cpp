@@ -21,8 +21,6 @@ namespace Scheduler
         }
 
         this->items = new std::list<Item*>;
-
-        this->calculate();
     }
 
     int Bucket::GetID()
@@ -69,9 +67,5 @@ namespace Scheduler
         }
 
         this->items->push_front(item);
-    }
-
-    void Bucket::calculate()
-    {
     }
 }
