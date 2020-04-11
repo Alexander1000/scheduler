@@ -16,7 +16,7 @@ namespace Scheduler {
         std::map<int, int> capacity;
 
         // list items
-        std::list<Scheduler::Item*> items;
+        std::list<Item*> items;
     };
 
 }
