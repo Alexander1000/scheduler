@@ -2,6 +2,12 @@
 #include <scheduler.h>
 #include <map>
 
+class AssertDistributionNotExists
+{};
+
+class AssertItemNotFoundInBucket
+{};
+
 CppUnitTest::TestCase* testSchedule_ValidData_Positive()
 {
     CppUnitTest::TestCase* t = nullptr;
@@ -51,7 +57,11 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     // make expected distribution
     std::map<int, int*>* expectedDistribution;
     expectedDistribution = new std::map<int, int*>;
-    expectedDistribution->emplace(1, nullptr);
+    int* items1;
+    items1 = new int[10];
+    memset(items1, 0, 10);
+    items1[0] = 1;
+    expectedDistribution->emplace(1, items1);
 
     // distribution items in buckets
     std::map<int, int*>* distribution = s.__GetDistributionItems();
@@ -75,10 +85,15 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
                         j++;
                     }
                 }
+
+                if (!found) {
+                    throw new AssertItemNotFoundInBucket;
+                }
                 i++;
             }
         } else {
             // not exist
+            throw new AssertDistributionNotExists;
         }
     }
 

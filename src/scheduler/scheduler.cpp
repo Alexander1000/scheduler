@@ -42,7 +42,8 @@ namespace Scheduler
         for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
             Bucket* bucket = *it;
             int* items;
-            items = new int[bucket->GetItems()->size()];
+            items = new int[bucket->GetItems()->size() + 1];
+            memset(items, 0, bucket->GetItems()->size() + 1);
 
             std::list<Item*>::iterator itElement;
             int i = 0;
