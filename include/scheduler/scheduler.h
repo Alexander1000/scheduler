@@ -9,6 +9,7 @@
 namespace Scheduler {
     // scheduler
     class Scheduler {
+    public:
         Scheduler();
         void AddBucket(Bucket* bucket);
     private:

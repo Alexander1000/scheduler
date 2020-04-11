@@ -8,6 +8,7 @@
 namespace Scheduler {
     // bucket
     class Bucket {
+    public:
         Bucket(int id, std::map<int, int>* capacity);
         int GetID();
     private:
