@@ -8,6 +8,12 @@ include_directories(
     include
 )
 
+set(SCHEDULER_SOURCES
+    src/main.cpp
+    src/scheduler/resource.cpp
+)
+
 add_executable(
     ${PROJECT_NAME} src/main.cpp
+    ${SCHEDULER_SOURCES}
 )
