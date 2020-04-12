@@ -308,6 +308,17 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     t->increment();
 
     YamlArray* lResources = (YamlArray*) itObject->second->getData();
+    YamlArray::iterator itResources;
+    int i = 1;
+    for (itResources = lResources->begin(); itResources != lResources->end(); ++itResources) {
+        if ((*itResources)->getType() != YamlParser::ElementType::PlainTextType) {
+            throw new AssertInvalidYamlElementType;
+        }
+        t->increment();
+        std::string* resourceName = (std::string*) (*itResources)->getData();
+        resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
+        i++;
+    }
 
     t->finish();
     return t;
