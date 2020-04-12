@@ -454,6 +454,27 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         if ((*itDistribution)->getType() != YamlParser::ElementType::ObjectType) {
             throw new AssertInvalidYamlElementType;
         }
+        YamlObject* elDistribution = (YamlObject*) (*itDistribution)->getData();
+
+        YamlObject::iterator itElementDistribution;
+
+        itElementDistribution = elDistribution->find("id");
+        if (itElementDistribution == elDistribution->end()) {
+            throw new AssertPropertyNotExists;
+        }
+        if (itElementDistribution->second->getType() != YamlParser::ElementType::PlainTextType) {
+            throw new AssertInvalidYamlElementType;
+        }
+        std::string* sIdBucket = (std::string*) itElementDistribution->second->getData();
+        int idBucket = atoi(sIdBucket->c_str()); // bucket id
+
+        itElementDistribution = elDistribution->find("ids");
+        if (itElementDistribution == elDistribution->end()) {
+            throw new AssertPropertyNotExists;
+        }
+        if (itElementDistribution->second->getType() != YamlParser::ElementType::ListType) {
+            throw new AssertInvalidYamlElementType;
+        }
     }
 
     t->finish();
