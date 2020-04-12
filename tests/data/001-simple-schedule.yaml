@@ -1,0 +1,122 @@
+strategy: simple
+
+resources:
+  - cpu
+  - memory
+  - gpu
+
+buckets:
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+  - resources:
+      cpu: 64
+      memory: 200000
+      gpu: 4
+
+items:
+  - resources:
+      cpu: 5
+      memory: 1000
+
+  - resources:
+      cpu: 9
+      memory: 10000
+      gpu: 4
+    count: 4
+
+  - resources:
+      cpu: 9
+      memory: 10000
+      gpu: 3
+    count: 4
+
+  - resources:
+      cpu: 9
+      memory: 10000
+      gpu: 2
+    count: 4
+
+  - resources:
+      cpu: 9
+      memory: 10000
+      gpu: 1
+    count: 4
+
+  - resources:
+      cpu: 5
+      memory: 30000
+    count: 5
+
+  - resources:
+      cpu: 30
+      memory: 9000
+
+  - resources:
+      cpu: 20
+      memory: 5000
+    count: 5
+
+  - resources:
+      cpu: 12
+      memory: 50000
+    count: 15
+
+  - resources:
+      cpu: 20
+      memory: 90000
+
+  - resources:
+      cpu: 40
+      memory: 150000
+
+  - resources:
+      cpu: 12
+      memory: 50000
+
+  - resources:
+      cpu: 3
+      memory: 5000
+    count: 15
