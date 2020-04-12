@@ -478,7 +478,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         }
         YamlArray* aListIds = (YamlArray*) itElementDistribution->second->getData();
         YamlArray::iterator itListIds;
-        int itemIds[aListIds->size() + 1];
+        int* itemIds = new int[aListIds->size() + 1];
         memset(itemIds, 0, aListIds->size() + 1);
         int j = 0;
         for (itListIds = aListIds->begin(); itListIds != aListIds->end(); ++itListIds) {
