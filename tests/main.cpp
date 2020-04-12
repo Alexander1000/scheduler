@@ -282,7 +282,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     YamlParser::Element* rElement = decoder.parse();
     YamlObject* rObj = (YamlObject*) rElement->getData();
 
-    std::map<std::string, YamlParser::Element*>::iterator itObject = rObj->find("name");
+    YamlObject::iterator itObject = rObj->find("name");
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
     }
@@ -292,6 +292,22 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     std::string* testSuiteName = (std::string*) itObject->second->getData();
     t = new CppUnitTest::TestCase(testSuiteName->c_str());
     t->printTitle();
+
+    // resource map: (eg: cpu=1; memory=2; gpu=3)
+    std::map<std::string, int> resourceMap;
+
+    // parse from yaml resource map
+    itObject = rObj->find("resources");
+    if (itObject == rObj->end()) {
+        throw new AssertPropertyNotExists;
+    }
+    t->increment();
+    if (itObject->second->getType() != YamlParser::ElementType::ListType) {
+        throw new AssertInvalidYamlElementType;
+    }
+    t->increment();
+
+    YamlArray* lResources = (YamlArray*) itObject->second->getData();
 
     t->finish();
     return t;
