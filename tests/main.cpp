@@ -321,6 +321,9 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         i++;
     }
 
+    // make scheduler
+    Scheduler::Scheduler s;
+
     // @todo: make buckets
 
     itObject = rObj->find("buckets");
@@ -328,6 +331,20 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         throw new AssertPropertyNotExists;
     }
     t->increment();
+
+    if (itObject->second->getType() != YamlParser::ElementType::ListType) {
+        throw new AssertInvalidYamlElementType;
+    }
+    t->increment();
+
+    YamlArray* lBuckets = (YamlArray*) itObject->second->getData();
+    YamlArray::iterator itBucket;
+    for (itBucket = lBuckets->begin(); itBucket != lBuckets->end(); ++itBucket) {
+        if ((*itBucket)->getType() != YamlParser::ElementType::ObjectType) {
+            throw new AssertInvalidYamlElementType;
+        }
+        YamlObject* elBucket = (YamlObject*) (*itBucket)->getData();
+    }
 
     // @todo: make items
 
