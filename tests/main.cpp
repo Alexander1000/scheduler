@@ -322,10 +322,27 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     }
 
     // @todo: make buckets
-    
+
+    itObject = rObj->find("buckets");
+    if (itObject == rObj->end()) {
+        throw new AssertPropertyNotExists;
+    }
+    t->increment();
+
     // @todo: make items
 
+    itObject = rObj->find("items");
+    if (itObject == rObj->end()) {
+        throw new AssertPropertyNotExists;
+    }
+    t->increment();
+
     // @todo: make expected distribution
+    itObject = rObj->find("distribution");
+    if (itObject == rObj->end()) {
+        throw new AssertPropertyNotExists;
+    }
+    t->increment();
 
     t->finish();
     return t;
