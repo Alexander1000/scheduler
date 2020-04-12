@@ -3,6 +3,10 @@
 #include <map>
 #include <iostream>
 
+#define RESOURCE_CPU 1
+#define RESOURCE_MEMORY 2
+#define RESOURCE_GPU 3
+
 class AssertDistributionNotExists
 {};
 
@@ -118,18 +122,15 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     // make scheduler
     Scheduler::Scheduler s;
 
-    // resources
-    int rCpu = 1, rMemory = 2, rGpu = 3;
-
     for (int i = 0; i < 10; i++) {
         std::map<int, int>* resourceMap;
         resourceMap = new std::map<int, int>;
         // 64 cpu
-        resourceMap->insert(std::pair<int, int>(rCpu, 64));
+        resourceMap->insert(std::pair<int, int>(RESOURCE_CPU, 64));
         // 200 Gb memory
-        resourceMap->insert(std::pair<int, int>(rMemory, 200000));
+        resourceMap->insert(std::pair<int, int>(RESOURCE_MEMORY, 200000));
         // 4 gpu
-        resourceMap->insert(std::pair<int, int>(rGpu, 4));
+        resourceMap->insert(std::pair<int, int>(RESOURCE_GPU, 4));
 
         Scheduler::Bucket* bucket;
         bucket = new Scheduler::Bucket(i + 1, resourceMap);
@@ -137,8 +138,8 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     }
 
     std::map<int, int> itemR1;
-    itemR1.insert(std::pair<int, int>(rCpu, 5));
-    itemR1.insert(std::pair<int, int>(rMemory, 1000));
+    itemR1.insert(std::pair<int, int>(RESOURCE_CPU, 5));
+    itemR1.insert(std::pair<int, int>(RESOURCE_MEMORY, 1000));
     Scheduler::Item item1(1, &itemR1);
 
     s.ScheduleItem(&item1);
@@ -146,9 +147,9 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     for (int i = 0; i < 4; ++i) {
         std::map<int, int>* itemR2;
         itemR2 = new std::map<int, int>;
-        itemR2->insert(std::pair<int, int>(rCpu, 9));
-        itemR2->insert(std::pair<int, int>(rMemory, 10000));
-        itemR2->insert(std::pair<int, int>(rGpu, 4));
+        itemR2->insert(std::pair<int, int>(RESOURCE_CPU, 9));
+        itemR2->insert(std::pair<int, int>(RESOURCE_MEMORY, 10000));
+        itemR2->insert(std::pair<int, int>(RESOURCE_GPU, 4));
         Scheduler::Item* item2;
         item2 = new Scheduler::Item(i + 2, itemR2);
         s.ScheduleItem(item2);
