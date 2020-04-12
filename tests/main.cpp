@@ -400,6 +400,19 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         throw new AssertPropertyNotExists;
     }
 
+    if (itObject->second->getType() != YamlParser::ElementType::ListType) {
+        throw new AssertInvalidYamlElementType;
+    }
+
+    YamlArray* lItems = (YamlArray*) itObject->second->getData();
+    YamlArray::iterator itItems;
+    for (itItems = lItems->begin(); itItems != lItems->end(); ++itItems) {
+        if ((*itItems)->getType() != YamlParser::ElementType::ObjectType) {
+            throw new AssertInvalidYamlElementType;
+        }
+        YamlObject* elItem = (YamlObject*) (*itItems)->getData();
+    }
+
     // @todo: make expected distribution
     itObject = rObj->find("distribution");
     if (itObject == rObj->end()) {
