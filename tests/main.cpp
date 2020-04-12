@@ -306,11 +306,10 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
     }
-    t->increment();
+
     if (itObject->second->getType() != YamlParser::ElementType::ListType) {
         throw new AssertInvalidYamlElementType;
     }
-    t->increment();
 
     YamlArray* lResources = (YamlArray*) itObject->second->getData();
     YamlArray::iterator itResources;
@@ -319,7 +318,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         if ((*itResources)->getType() != YamlParser::ElementType::PlainTextType) {
             throw new AssertInvalidYamlElementType;
         }
-        t->increment();
+
         std::string* resourceName = (std::string*) (*itResources)->getData();
         // fill resource map
         resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
@@ -335,15 +334,14 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
     }
-    t->increment();
 
     if (itObject->second->getType() != YamlParser::ElementType::ListType) {
         throw new AssertInvalidYamlElementType;
     }
-    t->increment();
 
     YamlArray* lBuckets = (YamlArray*) itObject->second->getData();
     YamlArray::iterator itBucket;
+    i = 0;
     for (itBucket = lBuckets->begin(); itBucket != lBuckets->end(); ++itBucket) {
         if ((*itBucket)->getType() != YamlParser::ElementType::ObjectType) {
             throw new AssertInvalidYamlElementType;
@@ -379,6 +377,10 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
             }
             resBucket->insert(std::pair<int, int>(itResourceMap->second, amount));
         }
+
+        s.AddBucket(new Scheduler::Bucket(i, resBucket));
+
+        i++;
     }
 
     // @todo: make items
@@ -387,14 +389,12 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
     }
-    t->increment();
 
     // @todo: make expected distribution
     itObject = rObj->find("distribution");
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
     }
-    t->increment();
 
     t->finish();
     return t;
