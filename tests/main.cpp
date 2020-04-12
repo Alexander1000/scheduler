@@ -155,6 +155,17 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.ScheduleItem(item2);
     }
 
+    for (int i = 0; i < 4; ++i) {
+        std::map<int, int>* itemR3;
+        itemR3 = new std::map<int, int>;
+        itemR3->insert(std::pair<int, int>(RESOURCE_CPU, 10));
+        itemR3->insert(std::pair<int, int>(RESOURCE_MEMORY, 10000));
+        itemR3->insert(std::pair<int, int>(RESOURCE_GPU, 3));
+        Scheduler::Item* item3;
+        item3 = new Scheduler::Item(i + 6, itemR3);
+        s.ScheduleItem(item3);
+    }
+
     // make expected distribution
     std::map<int, int*>* expectedDistribution;
     expectedDistribution = new std::map<int, int*>;
@@ -176,19 +187,19 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     expectedDistribution->emplace(4, items4);
 
     // data-set for bucket #5
-    int items5[2] = {0, 0};
+    int items5[2] = {6, 0};
     expectedDistribution->emplace(5, items5);
 
     // data-set for bucket #6
-    int items6[2] = {0, 0};
+    int items6[2] = {7, 0};
     expectedDistribution->emplace(6, items6);
 
     // data-set for bucket #7
-    int items7[2] = {0, 0};
+    int items7[2] = {8, 0};
     expectedDistribution->emplace(7, items7);
 
     // data-set for bucket #8
-    int items8[2] = {0, 0};
+    int items8[2] = {9, 0};
     expectedDistribution->emplace(8, items8);
 
     // data-set for bucket #9
