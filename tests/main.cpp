@@ -4,6 +4,8 @@
 #include <iostream>
 #include <dirent.h>
 #include <vector>
+#include <io-buffer.h>
+#include <yaml-parser.h>
 
 #include "sequence.cpp"
 
@@ -21,6 +23,12 @@ class AssertItemNotFoundInBucket
 
 class AssertUnExpectedItemExists
 {};
+
+class AssertPropertyNotExists
+{};
+
+typedef std::map<std::string, YamlParser::Element*> YamlObject;
+typedef std::list<YamlParser::Element*> YamlArray;
 
 void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedDistribution, std::map<int, int*>* distribution)
 {
@@ -257,7 +265,30 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
 
 CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 {
-    return nullptr;
+    CppUnitTest::TestCase* t = nullptr;
+
+    char buff[FILENAME_MAX];
+    memset(buff, 0, sizeof(char) * FILENAME_MAX);
+    std::sprintf(buff, "../tests/data/%s", fileName.c_str());
+
+    IOBuffer::IOFileReader fileReader(buff);
+    IOBuffer::CharStream charStream(&fileReader);
+    YamlParser::Stream yamlStream(&charStream);
+    YamlParser::Decoder decoder(&yamlStream);
+
+    YamlParser::Element* rElement = decoder.parse();
+    YamlObject* rObj = (YamlObject*) rElement->getData();
+
+    std::map<std::string, YamlParser::Element*>::iterator itObject = rObj->find("name");
+    if (itObject == rObj->end()) {
+        throw new AssertPropertyNotExists;
+    }
+    std::string* testSuiteName = (std::string*) itObject->second->getData();
+    t = new CppUnitTest::TestCase(testSuiteName->c_str());
+    t->printTitle();
+
+    t->finish();
+    return t;
 }
 
 static int filter(const struct dirent* dir_ent)
