@@ -354,7 +354,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     // make scheduler
     Scheduler::Scheduler s;
 
-    // @todo: make buckets
+    // make buckets
 
     itObject = rObj->find("buckets");
     if (itObject == rObj->end()) {
@@ -387,6 +387,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         ResourceMap* resBucket = parseResourcesFromYaml(objBucketResources, &resourceMap);
 
+        // add bucket in scheduler
         s.AddBucket(new Scheduler::Bucket(i, resBucket));
 
         i++;
