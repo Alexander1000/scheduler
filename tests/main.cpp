@@ -194,44 +194,50 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
 
     s.ScheduleItem(createItem(40, 150000, 0));
 
+    s.ScheduleItem(createItem(12, 50000, 0));
+
+    for (int i = 0; i < 15; ++i) {
+        s.ScheduleItem(createItem(3, 5000, 0));
+    }
+
     // make expected distribution
     std::map<int, int*>* expectedDistribution;
     expectedDistribution = new std::map<int, int*>;
 
     // data-set for bucket #1
-    int items1[9] = {1, 2, 18, 19, 20, 21, 22, 24, 0};
+    int items1[10] = {1, 2, 18, 19, 20, 21, 22, 24, 47, 0};
     expectedDistribution->emplace(1, items1);
 
     // data-set for bucket #2
-    int items2[4] = {3, 23, 25, 0};
+    int items2[5] = {3, 23, 25, 48, 0};
     expectedDistribution->emplace(2, items2);
 
     // data-set for bucket #3
-    int items3[5] = {4, 26, 27, 29, 0};
+    int items3[6] = {4, 26, 27, 29, 49, 0};
     expectedDistribution->emplace(3, items3);
 
     // data-set for bucket #4
-    int items4[5] = {5, 28, 30, 31, 0};
+    int items4[8] = {5, 28, 30, 31, 50, 51, 52, 0};
     expectedDistribution->emplace(4, items4);
 
     // data-set for bucket #5
-    int items5[6] = {6, 14, 32, 33, 34, 0};
+    int items5[8] = {6, 14, 32, 33, 34, 53, 54, 0};
     expectedDistribution->emplace(5, items5);
 
     // data-set for bucket #6
-    int items6[6] = {7, 15, 35, 36, 37, 0};
+    int items6[8] = {7, 15, 35, 36, 37, 55, 56, 0};
     expectedDistribution->emplace(6, items6);
 
     // data-set for bucket #7
-    int items7[6] = {8, 16, 38, 39, 40, 0};
+    int items7[8] = {8, 16, 38, 39, 40, 57, 58, 0};
     expectedDistribution->emplace(7, items7);
 
     // data-set for bucket #8
-    int items8[6] = {9, 17, 41, 42, 43, 0};
+    int items8[8] = {9, 17, 41, 42, 43, 59, 60, 0};
     expectedDistribution->emplace(8, items8);
 
     // data-set for bucket #9
-    int items9[4] = {10, 11, 44, 0};
+    int items9[7] = {10, 11, 44, 46, 61, 0};
     expectedDistribution->emplace(9, items9);
 
     // data-set for bucket #9
