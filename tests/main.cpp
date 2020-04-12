@@ -27,6 +27,9 @@ class AssertUnExpectedItemExists
 class AssertPropertyNotExists
 {};
 
+class AssertInvalidYamlElementType
+{};
+
 typedef std::map<std::string, YamlParser::Element*> YamlObject;
 typedef std::list<YamlParser::Element*> YamlArray;
 
@@ -282,6 +285,9 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     std::map<std::string, YamlParser::Element*>::iterator itObject = rObj->find("name");
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
+    }
+    if (itObject->second->getType() != YamlParser::ElementType::PlainTextType) {
+        throw new AssertInvalidYamlElementType;
     }
     std::string* testSuiteName = (std::string*) itObject->second->getData();
     t = new CppUnitTest::TestCase(testSuiteName->c_str());
