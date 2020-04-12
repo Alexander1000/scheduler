@@ -12,67 +12,8 @@ class AssertItemNotFoundInBucket
 class AssertUnExpectedItemExists
 {};
 
-CppUnitTest::TestCase* testSchedule_ValidData_Positive()
+void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedDistribution, std::map<int, int*>* distribution)
 {
-    CppUnitTest::TestCase* t = nullptr;
-    t = new CppUnitTest::TestCase("001-first-integration-test");
-
-    t->printTitle();
-
-    // make scheduler
-    Scheduler::Scheduler s;
-
-    // resources
-    int rCpu = 1, rMemory = 2, rGpu = 3;
-
-    for (int i = 0; i < 10; i++) {
-        std::map<int, int>* resourceMap;
-        resourceMap = new std::map<int, int>;
-        // 64 cpu
-        resourceMap->insert(std::pair<int, int>(rCpu, 64));
-        // 200 Gb memory
-        resourceMap->insert(std::pair<int, int>(rMemory, 200000));
-        // 4 gpu
-        resourceMap->insert(std::pair<int, int>(rGpu, 4));
-
-        Scheduler::Bucket* bucket;
-        bucket = new Scheduler::Bucket(i + 1, resourceMap);
-        s.AddBucket(bucket);
-    }
-
-    std::map<int, int> itemR1;
-    itemR1.insert(std::pair<int, int>(rCpu, 5));
-    itemR1.insert(std::pair<int, int>(rMemory, 1000));
-    Scheduler::Item item1(1, &itemR1);
-
-    s.ScheduleItem(&item1);
-
-    for (int i = 0; i < 4; ++i) {
-        std::map<int, int>* itemR2;
-        itemR2 = new std::map<int, int>;
-        itemR2->insert(std::pair<int, int>(rCpu, 9));
-        itemR2->insert(std::pair<int, int>(rMemory, 10000));
-        itemR2->insert(std::pair<int, int>(rGpu, 4));
-        Scheduler::Item* item2;
-        item2 = new Scheduler::Item(i + 2, itemR2);
-        s.ScheduleItem(item2);
-    }
-
-    // make expected distribution
-    std::map<int, int*>* expectedDistribution;
-    expectedDistribution = new std::map<int, int*>;
-
-    // first data-set for bucket #1
-    int items1[3] = {1, 2, 0};
-    expectedDistribution->emplace(1, items1);
-
-    // first data-set for bucket #2
-    int items2[2] = {3, 0};
-    expectedDistribution->emplace(2, items2);
-
-    // distribution items in buckets
-    std::map<int, int*>* distribution = s.__GetDistributionItems();
-
     // assertions
     std::map<int, int*>::iterator itExpDistribution;
     for (itExpDistribution = expectedDistribution->begin(); itExpDistribution != expectedDistribution->end(); ++itExpDistribution) {
@@ -159,6 +100,70 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
             throw new AssertDistributionNotExists;
         }
     }
+}
+
+CppUnitTest::TestCase* testSchedule_ValidData_Positive()
+{
+    CppUnitTest::TestCase* t = nullptr;
+    t = new CppUnitTest::TestCase("001-first-integration-test");
+
+    t->printTitle();
+
+    // make scheduler
+    Scheduler::Scheduler s;
+
+    // resources
+    int rCpu = 1, rMemory = 2, rGpu = 3;
+
+    for (int i = 0; i < 10; i++) {
+        std::map<int, int>* resourceMap;
+        resourceMap = new std::map<int, int>;
+        // 64 cpu
+        resourceMap->insert(std::pair<int, int>(rCpu, 64));
+        // 200 Gb memory
+        resourceMap->insert(std::pair<int, int>(rMemory, 200000));
+        // 4 gpu
+        resourceMap->insert(std::pair<int, int>(rGpu, 4));
+
+        Scheduler::Bucket* bucket;
+        bucket = new Scheduler::Bucket(i + 1, resourceMap);
+        s.AddBucket(bucket);
+    }
+
+    std::map<int, int> itemR1;
+    itemR1.insert(std::pair<int, int>(rCpu, 5));
+    itemR1.insert(std::pair<int, int>(rMemory, 1000));
+    Scheduler::Item item1(1, &itemR1);
+
+    s.ScheduleItem(&item1);
+
+    for (int i = 0; i < 4; ++i) {
+        std::map<int, int>* itemR2;
+        itemR2 = new std::map<int, int>;
+        itemR2->insert(std::pair<int, int>(rCpu, 9));
+        itemR2->insert(std::pair<int, int>(rMemory, 10000));
+        itemR2->insert(std::pair<int, int>(rGpu, 4));
+        Scheduler::Item* item2;
+        item2 = new Scheduler::Item(i + 2, itemR2);
+        s.ScheduleItem(item2);
+    }
+
+    // make expected distribution
+    std::map<int, int*>* expectedDistribution;
+    expectedDistribution = new std::map<int, int*>;
+
+    // first data-set for bucket #1
+    int items1[3] = {1, 2, 0};
+    expectedDistribution->emplace(1, items1);
+
+    // first data-set for bucket #2
+    int items2[2] = {3, 0};
+    expectedDistribution->emplace(2, items2);
+
+    // distribution items in buckets
+    std::map<int, int*>* distribution = s.__GetDistributionItems();
+
+    assertDistribution(t, expectedDistribution, distribution);
 
     t->finish();
     return t;
