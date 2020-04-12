@@ -316,6 +316,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         }
         t->increment();
         std::string* resourceName = (std::string*) (*itResources)->getData();
+        // fill resource map
         resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
         i++;
     }
