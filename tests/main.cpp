@@ -271,6 +271,32 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     return t;
 }
 
+ResourceMap* parseResourcesFromYaml(YamlObject* objResources, ResourceMapDict* dictResources)
+{
+    ResourceMap* resourceMap;
+    resourceMap = new ResourceMap;
+
+    YamlObject::iterator itResource;
+
+    // iterate bucket resources
+    for (itResource = objResources->begin(); itResource != objResources->end(); ++itResource) {
+        if (itResource->second->getType() != YamlParser::ElementType::PlainTextType) {
+            throw new AssertInvalidYamlElementType;
+        }
+
+        std::string* sAmount = (std::string*) itResource->second->getData();
+        int amount = atoi(sAmount->c_str());
+
+        ResourceMapDict::iterator itResourceMap = dictResources->find(itResource->first);
+        if (itResourceMap == dictResources->end()) {
+            throw new AssertInvalidResource;
+        }
+        resourceMap->insert(std::pair<int, int>(itResourceMap->second, amount));
+    }
+
+    return resourceMap;
+}
+
 CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 {
     CppUnitTest::TestCase* t = nullptr;
@@ -359,24 +385,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         YamlObject* objBucketResources = (YamlObject*) itBucketProp->second->getData();
         YamlObject::iterator itResBucket;
 
-        ResourceMap* resBucket;
-        resBucket = new ResourceMap;
-
-        // iterate bucket resources
-        for (itResBucket = objBucketResources->begin(); itResBucket != objBucketResources->end(); ++itResBucket) {
-            if (itResBucket->second->getType() != YamlParser::ElementType::PlainTextType) {
-                throw new AssertInvalidYamlElementType;
-            }
-
-            std::string* sAmount = (std::string*) itResBucket->second->getData();
-            int amount = atoi(sAmount->c_str());
-
-            ResourceMapDict::iterator itResourceMap = resourceMap.find(itResBucket->first);
-            if (itResourceMap == resourceMap.end()) {
-                throw new AssertInvalidResource;
-            }
-            resBucket->insert(std::pair<int, int>(itResourceMap->second, amount));
-        }
+        ResourceMap* resBucket = parseResourcesFromYaml(objBucketResources, &resourceMap);
 
         s.AddBucket(new Scheduler::Bucket(i, resBucket));
 
