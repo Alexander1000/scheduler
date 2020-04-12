@@ -3,9 +3,13 @@
 #include <map>
 #include <iostream>
 
+#include "sequence.cpp"
+
 #define RESOURCE_CPU 1
 #define RESOURCE_MEMORY 2
 #define RESOURCE_GPU 3
+
+Sequence sequence;
 
 class AssertDistributionNotExists
 {};
@@ -112,6 +116,23 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
     }
 }
 
+Scheduler::Item* createItem(int cpu, int memory, int gpu)
+{
+    std::map<int, int>* resourceMap;
+    resourceMap = new std::map<int, int>;
+    if (cpu > 0) {
+        resourceMap->insert(std::pair<int, int>(RESOURCE_CPU, cpu));
+    }
+    if (memory > 0) {
+        resourceMap->insert(std::pair<int, int>(RESOURCE_MEMORY, memory));
+    }
+    if (gpu > 0) {
+        resourceMap->insert(std::pair<int, int>(RESOURCE_GPU, gpu));
+    }
+
+    return new Scheduler::Item(sequence.GetNextID(), resourceMap);
+}
+
 CppUnitTest::TestCase* testSchedule_ValidData_Positive()
 {
     CppUnitTest::TestCase* t = nullptr;
@@ -137,33 +158,14 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.AddBucket(bucket);
     }
 
-    std::map<int, int> itemR1;
-    itemR1.insert(std::pair<int, int>(RESOURCE_CPU, 5));
-    itemR1.insert(std::pair<int, int>(RESOURCE_MEMORY, 1000));
-    Scheduler::Item item1(1, &itemR1);
-
-    s.ScheduleItem(&item1);
+    s.ScheduleItem(createItem(5, 1000, 0));
 
     for (int i = 0; i < 4; ++i) {
-        std::map<int, int>* itemR2;
-        itemR2 = new std::map<int, int>;
-        itemR2->insert(std::pair<int, int>(RESOURCE_CPU, 9));
-        itemR2->insert(std::pair<int, int>(RESOURCE_MEMORY, 10000));
-        itemR2->insert(std::pair<int, int>(RESOURCE_GPU, 4));
-        Scheduler::Item* item2;
-        item2 = new Scheduler::Item(i + 2, itemR2);
-        s.ScheduleItem(item2);
+        s.ScheduleItem(createItem(9, 10000, 4));
     }
 
     for (int i = 0; i < 4; ++i) {
-        std::map<int, int>* itemR3;
-        itemR3 = new std::map<int, int>;
-        itemR3->insert(std::pair<int, int>(RESOURCE_CPU, 10));
-        itemR3->insert(std::pair<int, int>(RESOURCE_MEMORY, 10000));
-        itemR3->insert(std::pair<int, int>(RESOURCE_GPU, 3));
-        Scheduler::Item* item3;
-        item3 = new Scheduler::Item(i + 6, itemR3);
-        s.ScheduleItem(item3);
+        s.ScheduleItem(createItem(10, 10000, 3));
     }
 
     // make expected distribution
