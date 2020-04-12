@@ -150,6 +150,16 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         }
     }
 
+    std::map<int, int*>::iterator itDistribution;
+    for (itDistribution = distribution->begin(); itDistribution != distribution->end(); ++itDistribution) {
+        std::map<int, int*>::iterator itExpDistr = expectedDistribution->find(itDistribution->first);
+        if (itExpDistr == expectedDistribution->end()) {
+            // not found
+            std::cout << "Unexpected distribution exists for bucket #" << itDistribution->first << std::endl;
+            throw new AssertDistributionNotExists;
+        }
+    }
+
     t->finish();
     return t;
 }
