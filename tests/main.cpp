@@ -369,7 +369,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
     YamlArray* lBuckets = (YamlArray*) itObject->second->getData();
     YamlArray::iterator itBucket;
-    i = 0;
+    i = 1;
     for (itBucket = lBuckets->begin(); itBucket != lBuckets->end(); ++itBucket) {
         if ((*itBucket)->getType() != YamlParser::ElementType::ObjectType) {
             throw new AssertInvalidYamlElementType;

@@ -70,19 +70,19 @@ items:
     count: 4
 
   - resources:
-      cpu: 9
+      cpu: 10
       memory: 10000
       gpu: 3
     count: 4
 
   - resources:
-      cpu: 9
+      cpu: 10
       memory: 10000
       gpu: 2
     count: 4
 
   - resources:
-      cpu: 9
+      cpu: 10
       memory: 10000
       gpu: 1
     count: 4
