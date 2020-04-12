@@ -13,8 +13,6 @@
 #define RESOURCE_MEMORY 2
 #define RESOURCE_GPU 3
 
-Sequence sequence;
-
 class AssertDistributionNotExists
 {};
 
@@ -135,7 +133,7 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
     }
 }
 
-Scheduler::Item* createItem(int cpu, int memory, int gpu)
+Scheduler::Item* createItem(int itemId, int cpu, int memory, int gpu)
 {
     std::map<int, int>* resourceMap;
     resourceMap = new std::map<int, int>;
@@ -149,7 +147,7 @@ Scheduler::Item* createItem(int cpu, int memory, int gpu)
         resourceMap->insert(std::pair<int, int>(RESOURCE_GPU, gpu));
     }
 
-    return new Scheduler::Item(sequence.GetNextID(), resourceMap);
+    return new Scheduler::Item(itemId, resourceMap);
 }
 
 CppUnitTest::TestCase* testSchedule_ValidData_Positive()
@@ -158,6 +156,8 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     t = new CppUnitTest::TestCase("001-first-integration-test");
 
     t->printTitle();
+
+    Sequence sequence;
 
     // make scheduler
     Scheduler::Scheduler s;
@@ -177,46 +177,46 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.AddBucket(bucket);
     }
 
-    s.ScheduleItem(createItem(5, 1000, 0));
+    s.ScheduleItem(createItem(sequence.GetNextID(), 5, 1000, 0));
 
     for (int i = 0; i < 4; ++i) {
-        s.ScheduleItem(createItem(9, 10000, 4));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 9, 10000, 4));
     }
 
     for (int i = 0; i < 4; ++i) {
-        s.ScheduleItem(createItem(10, 10000, 3));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 10, 10000, 3));
     }
 
     for (int i = 0; i < 4; ++i) {
-        s.ScheduleItem(createItem(10, 10000, 2));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 10, 10000, 2));
     }
 
     for (int i = 0; i < 4; ++i) {
-        s.ScheduleItem(createItem(10, 10000, 1));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 10, 10000, 1));
     }
 
     for (int i = 0; i < 5; ++i) {
-        s.ScheduleItem(createItem(5, 30000, 0));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 5, 30000, 0));
     }
 
-    s.ScheduleItem(createItem(30, 9000, 0));
+    s.ScheduleItem(createItem(sequence.GetNextID(), 30, 9000, 0));
 
     for (int i = 0; i < 5; ++i) {
-        s.ScheduleItem(createItem(20, 5000, 0));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 20, 5000, 0));
     }
 
     for (int i = 0; i < 15; ++i) {
-        s.ScheduleItem(createItem(12, 50000, 0));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 12, 50000, 0));
     }
 
-    s.ScheduleItem(createItem(20, 90000, 0));
+    s.ScheduleItem(createItem(sequence.GetNextID(), 20, 90000, 0));
 
-    s.ScheduleItem(createItem(40, 150000, 0));
+    s.ScheduleItem(createItem(sequence.GetNextID(), 40, 150000, 0));
 
-    s.ScheduleItem(createItem(12, 50000, 0));
+    s.ScheduleItem(createItem(sequence.GetNextID(), 12, 50000, 0));
 
     for (int i = 0; i < 15; ++i) {
-        s.ScheduleItem(createItem(3, 5000, 0));
+        s.ScheduleItem(createItem(sequence.GetNextID(), 3, 5000, 0));
     }
 
     // make expected distribution
@@ -300,6 +300,7 @@ ResourceMap* parseResourcesFromYaml(YamlObject* objResources, ResourceMapDict* d
 
 CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 {
+    Sequence sequence;
     CppUnitTest::TestCase* t = nullptr;
 
     char buff[FILENAME_MAX];
@@ -492,6 +493,11 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         expectedDistribution->insert(std::pair<int, int*>(idBucket, itemIds));
     }
+
+    // distribution items in buckets
+    DistributionMap* distribution = s.__GetDistributionItems();
+
+    assertDistribution(t, expectedDistribution, distribution);
 
     t->finish();
     return t;
