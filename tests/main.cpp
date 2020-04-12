@@ -37,6 +37,7 @@ typedef std::map<std::string, YamlParser::Element*> YamlObject;
 typedef std::list<YamlParser::Element*> YamlArray;
 typedef std::map<std::string, int> ResourceMapDict;
 typedef std::map<int, int> ResourceMap;
+typedef std::map<int, int*> DistributionMap;
 
 void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedDistribution, std::map<int, int*>* distribution)
 {
@@ -162,7 +163,7 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     Scheduler::Scheduler s;
 
     for (int i = 0; i < 10; i++) {
-        std::map<int, int>* resourceMap;
+        ResourceMap* resourceMap;
         resourceMap = new std::map<int, int>;
         // 64 cpu
         resourceMap->insert(std::pair<int, int>(RESOURCE_CPU, 64));
@@ -219,8 +220,8 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     }
 
     // make expected distribution
-    std::map<int, int*>* expectedDistribution;
-    expectedDistribution = new std::map<int, int*>;
+    DistributionMap* expectedDistribution;
+    expectedDistribution = new DistributionMap;
 
     // data-set for bucket #1
     int items1[10] = {1, 2, 18, 19, 20, 21, 22, 24, 47, 0};
@@ -263,7 +264,7 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     expectedDistribution->emplace(10, items10);
 
     // distribution items in buckets
-    std::map<int, int*>* distribution = s.__GetDistributionItems();
+    DistributionMap* distribution = s.__GetDistributionItems();
 
     assertDistribution(t, expectedDistribution, distribution);
 
