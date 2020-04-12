@@ -255,6 +255,11 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     return t;
 }
 
+CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
+{
+    return nullptr;
+}
+
 static int filter(const struct dirent* dir_ent)
 {
     if (!strcmp(dir_ent->d_name, ".") || !strcmp(dir_ent->d_name, "..")) {
@@ -277,16 +282,12 @@ int main() {
     std::vector<std::string> v;
 
     struct dirent **namelist;
+
     // running from cmake-build-debug dir
     int n = scandir("../tests/data", &namelist, *filter, alphasort);
     for (int i = 0; i<n; i++) {
-        std::string fname = namelist[i]->d_name;
-
-        v.push_back(fname);
-
+        testSuite.addTestCase(testSchedule_YamlTestCase_Positive(namelist[i]->d_name));
         free(namelist[i]);
-
-        std::cout << "file: " << fname << std::endl;
     }
     free(namelist);
 
