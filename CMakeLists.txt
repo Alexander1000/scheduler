@@ -43,6 +43,12 @@ include_directories(include)
 find_library(CPP_UNIT_TEST libcpp-unit-test.a)
 message(STATUS "Found cpp-unit-test: ${CPP_UNIT_TEST}")
 
+find_library(IO_BUFFER libio-buffer.a)
+message(STATUS "Found io-buffer library: ${IO_BUFFER}")
+
+find_library(YAML_PARSER libyaml-parser.a)
+message(STATUS "Found yaml-parser library: ${YAML_PARSER}")
+
 add_executable(
     ${PROJECT_NAME} tests/main.cpp
     ${SCHEDULER_SOURCES_TEST}
@@ -50,4 +56,6 @@ add_executable(
 
 target_link_libraries(${PROJECT_NAME}
     ${CPP_UNIT_TEST}
+    ${IO_BUFFER}
+    ${YAML_PARSER}
 )

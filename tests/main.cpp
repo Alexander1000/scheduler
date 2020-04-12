@@ -2,6 +2,8 @@
 #include <scheduler.h>
 #include <map>
 #include <iostream>
+#include <dirent.h>
+#include <vector>
 
 #include "sequence.cpp"
 
@@ -253,10 +255,40 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     return t;
 }
 
+static int filter(const struct dirent* dir_ent)
+{
+    if (!strcmp(dir_ent->d_name, ".") || !strcmp(dir_ent->d_name, "..")) {
+        return 0;
+    }
+
+    std::string fname = dir_ent->d_name;
+
+    if (fname.find(".yaml") == std::string::npos) {
+        return 0;
+    }
+
+    return 1;
+}
+
 int main() {
     CppUnitTest::TestSuite testSuite;
 
     testSuite.addTestCase(testSchedule_ValidData_Positive());
+    std::vector<std::string> v;
+
+    struct dirent **namelist;
+    // running from cmake-build-debug dir
+    int n = scandir("../tests/data", &namelist, *filter, alphasort);
+    for (int i = 0; i<n; i++) {
+        std::string fname = namelist[i]->d_name;
+
+        v.push_back(fname);
+
+        free(namelist[i]);
+
+        std::cout << "file: " << fname << std::endl;
+    }
+    free(namelist);
 
     testSuite.printTotal();
 
