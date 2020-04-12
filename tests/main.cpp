@@ -171,6 +171,34 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     int items3[2] = {4, 0};
     expectedDistribution->emplace(3, items3);
 
+    // data-set for bucket #4
+    int items4[2] = {5, 0};
+    expectedDistribution->emplace(4, items4);
+
+    // data-set for bucket #5
+    int items5[2] = {0, 0};
+    expectedDistribution->emplace(5, items5);
+
+    // data-set for bucket #6
+    int items6[2] = {0, 0};
+    expectedDistribution->emplace(6, items6);
+
+    // data-set for bucket #7
+    int items7[2] = {0, 0};
+    expectedDistribution->emplace(7, items7);
+
+    // data-set for bucket #8
+    int items8[2] = {0, 0};
+    expectedDistribution->emplace(8, items8);
+
+    // data-set for bucket #9
+    int items9[2] = {0, 0};
+    expectedDistribution->emplace(9, items9);
+
+    // data-set for bucket #9
+    int items10[2] = {0, 0};
+    expectedDistribution->emplace(10, items10);
+
     // distribution items in buckets
     std::map<int, int*>* distribution = s.__GetDistributionItems();
 
