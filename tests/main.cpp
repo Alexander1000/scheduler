@@ -343,7 +343,28 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         if ((*itBucket)->getType() != YamlParser::ElementType::ObjectType) {
             throw new AssertInvalidYamlElementType;
         }
+        t->increment();
         YamlObject* elBucket = (YamlObject*) (*itBucket)->getData();
+
+        YamlObject::iterator itBucketProp = elBucket->find("resources");
+        if (itBucketProp == elBucket->end()) {
+            throw new AssertPropertyNotExists;
+        }
+        t->increment();
+        if (itBucketProp->second->getType() != YamlParser::ElementType::ObjectType) {
+            throw new AssertInvalidYamlElementType;
+        }
+        t->increment();
+
+        YamlObject* objBucketResources = (YamlObject*) itBucketProp->second->getData();
+        YamlObject::iterator itResBucket;
+        // iterate bucket resources
+        for (itResBucket = objBucketResources->begin(); itResBucket != objBucketResources->end(); ++itResBucket) {
+            if (itResBucket->second->getType() != YamlParser::ElementType::PlainTextType) {
+                throw new AssertInvalidYamlElementType;
+            }
+            t->increment();
+        }
     }
 
     // @todo: make items
