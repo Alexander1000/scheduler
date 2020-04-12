@@ -87,7 +87,7 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                                       << std::endl;
                             int j = 0;
                             while (itExpDistribution->second[j] != 0) {
-                                std::cout << "#" << itDistr->second[j] << std::endl;
+                                std::cout << "#" << itExpDistribution->second[j] << std::endl;
                                 j++;
                             }
                         }
@@ -168,6 +168,14 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
         s.ScheduleItem(createItem(10, 10000, 3));
     }
 
+    for (int i = 0; i < 4; ++i) {
+        s.ScheduleItem(createItem(10, 10000, 2));
+    }
+
+    for (int i = 0; i < 4; ++i) {
+        s.ScheduleItem(createItem(10, 10000, 1));
+    }
+
     // make expected distribution
     std::map<int, int*>* expectedDistribution;
     expectedDistribution = new std::map<int, int*>;
@@ -189,27 +197,27 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     expectedDistribution->emplace(4, items4);
 
     // data-set for bucket #5
-    int items5[2] = {6, 0};
+    int items5[3] = {6, 14, 0};
     expectedDistribution->emplace(5, items5);
 
     // data-set for bucket #6
-    int items6[2] = {7, 0};
+    int items6[3] = {7, 15, 0};
     expectedDistribution->emplace(6, items6);
 
     // data-set for bucket #7
-    int items7[2] = {8, 0};
+    int items7[3] = {8, 16, 0};
     expectedDistribution->emplace(7, items7);
 
     // data-set for bucket #8
-    int items8[2] = {9, 0};
+    int items8[3] = {9, 17, 0};
     expectedDistribution->emplace(8, items8);
 
     // data-set for bucket #9
-    int items9[2] = {0, 0};
+    int items9[3] = {10, 11, 0};
     expectedDistribution->emplace(9, items9);
 
     // data-set for bucket #9
-    int items10[2] = {0, 0};
+    int items10[3] = {12, 13, 0};
     expectedDistribution->emplace(10, items10);
 
     // distribution items in buckets
