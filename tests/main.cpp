@@ -435,10 +435,25 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         }
     }
 
-    // @todo: make expected distribution
+    // make expected distribution
+    DistributionMap* expectedDistribution;
+    expectedDistribution = new DistributionMap;
+
     itObject = rObj->find("distribution");
     if (itObject == rObj->end()) {
         throw new AssertPropertyNotExists;
+    }
+
+    if (itObject->second->getType() != YamlParser::ElementType::ListType) {
+        throw new AssertInvalidYamlElementType;
+    }
+
+    YamlArray* aDistribution = (YamlArray*) itObject->second->getData();
+    YamlArray::iterator itDistribution;
+    for (itDistribution = aDistribution->begin(); itDistribution != aDistribution->end(); ++itDistribution) {
+        if ((*itDistribution)->getType() != YamlParser::ElementType::ObjectType) {
+            throw new AssertInvalidYamlElementType;
+        }
     }
 
     t->finish();
