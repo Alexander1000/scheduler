@@ -393,7 +393,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         i++;
     }
 
-    // @todo: make items
+    // make items
 
     itObject = rObj->find("items");
     if (itObject == rObj->end()) {
@@ -411,6 +411,27 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
             throw new AssertInvalidYamlElementType;
         }
         YamlObject* elItem = (YamlObject*) (*itItems)->getData();
+        YamlObject::iterator itItem = elItem->find("resources");
+        if (itItem == elItem->end()) {
+            throw new AssertPropertyNotExists;
+        }
+        if (itItem->second->getType() != YamlParser::ElementType::ObjectType) {
+            throw new AssertInvalidYamlElementType;
+        }
+        ResourceMap* resourceItem = parseResourcesFromYaml((YamlObject*) itItem->second->getData(), &resourceMap);
+        int count = 1;
+        itItem = elItem->find("count");
+        if (itItem != elItem->end()) {
+            if (itItem->second->getType() != YamlParser::ElementType::PlainTextType) {
+                throw new AssertInvalidYamlElementType;
+            }
+            std::string* sAmount = (std::string*) itItem->second->getData();
+            count = atoi(sAmount->c_str());
+        }
+
+        for (int j = 0; j < count; ++j) {
+            s.ScheduleItem(new Scheduler::Item(sequence.GetNextID(), resourceItem));
+        }
     }
 
     // @todo: make expected distribution
