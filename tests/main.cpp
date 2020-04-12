@@ -19,6 +19,8 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
     for (itExpDistribution = expectedDistribution->begin(); itExpDistribution != expectedDistribution->end(); ++itExpDistribution) {
         std::map<int, int*>::iterator itDistr = distribution->find(itExpDistribution->first);
         if (itDistr != distribution->end() && itExpDistribution->second != nullptr) {
+            t->increment();
+
             int i = 0;
             while (itExpDistribution->second[i] != 0) {
                 int curItemId = itExpDistribution->second[i];
@@ -28,6 +30,7 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                     while (itDistr->second[j] != 0) {
                         if (curItemId == itDistr->second[j]) {
                             found = true;
+                            t->increment();
                             break;
                         }
                         j++;
@@ -60,6 +63,7 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                         int j = 0;
                         while (itExpDistribution->second[j] != 0) {
                             if (curItemId == itExpDistribution->second[j]) {
+                                t->increment();
                                 found = true;
                                 break;
                             }
@@ -98,6 +102,8 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
             // not found
             std::cout << "Unexpected distribution exists for bucket #" << itDistribution->first << std::endl;
             throw new AssertDistributionNotExists;
+        } else {
+            t->increment();
         }
     }
 }
@@ -152,13 +158,17 @@ CppUnitTest::TestCase* testSchedule_ValidData_Positive()
     std::map<int, int*>* expectedDistribution;
     expectedDistribution = new std::map<int, int*>;
 
-    // first data-set for bucket #1
+    // data-set for bucket #1
     int items1[3] = {1, 2, 0};
     expectedDistribution->emplace(1, items1);
 
-    // first data-set for bucket #2
+    // data-set for bucket #2
     int items2[2] = {3, 0};
     expectedDistribution->emplace(2, items2);
+
+    // data-set for bucket #3
+    int items3[2] = {4, 0};
+    expectedDistribution->emplace(3, items3);
 
     // distribution items in buckets
     std::map<int, int*>* distribution = s.__GetDistributionItems();
