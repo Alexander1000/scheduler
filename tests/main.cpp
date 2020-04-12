@@ -30,8 +30,13 @@ class AssertPropertyNotExists
 class AssertInvalidYamlElementType
 {};
 
+class AssertInvalidResource
+{};
+
 typedef std::map<std::string, YamlParser::Element*> YamlObject;
 typedef std::list<YamlParser::Element*> YamlArray;
+typedef std::map<std::string, int> ResourceMapDict;
+typedef std::map<int, int> ResourceMap;
 
 void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedDistribution, std::map<int, int*>* distribution)
 {
@@ -343,27 +348,36 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         if ((*itBucket)->getType() != YamlParser::ElementType::ObjectType) {
             throw new AssertInvalidYamlElementType;
         }
-        t->increment();
         YamlObject* elBucket = (YamlObject*) (*itBucket)->getData();
 
         YamlObject::iterator itBucketProp = elBucket->find("resources");
         if (itBucketProp == elBucket->end()) {
             throw new AssertPropertyNotExists;
         }
-        t->increment();
         if (itBucketProp->second->getType() != YamlParser::ElementType::ObjectType) {
             throw new AssertInvalidYamlElementType;
         }
-        t->increment();
 
         YamlObject* objBucketResources = (YamlObject*) itBucketProp->second->getData();
         YamlObject::iterator itResBucket;
+
+        ResourceMap* resBucket;
+        resBucket = new ResourceMap;
+
         // iterate bucket resources
         for (itResBucket = objBucketResources->begin(); itResBucket != objBucketResources->end(); ++itResBucket) {
             if (itResBucket->second->getType() != YamlParser::ElementType::PlainTextType) {
                 throw new AssertInvalidYamlElementType;
             }
-            t->increment();
+
+            std::string* sAmount = (std::string*) itResBucket->second->getData();
+            int amount = atoi(sAmount->c_str());
+
+            ResourceMapDict::iterator itResourceMap = resourceMap.find(itResBucket->first);
+            if (itResourceMap == resourceMap.end()) {
+                throw new AssertInvalidResource;
+            }
+            resBucket->insert(std::pair<int, int>(itResourceMap->second, amount));
         }
     }
 
