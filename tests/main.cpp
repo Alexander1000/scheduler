@@ -475,6 +475,22 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         if (itElementDistribution->second->getType() != YamlParser::ElementType::ListType) {
             throw new AssertInvalidYamlElementType;
         }
+        YamlArray* aListIds = (YamlArray*) itElementDistribution->second->getData();
+        YamlArray::iterator itListIds;
+        int itemIds[aListIds->size() + 1];
+        memset(itemIds, 0, aListIds->size() + 1);
+        int j = 0;
+        for (itListIds = aListIds->begin(); itListIds != aListIds->end(); ++itListIds) {
+            if ((*itListIds)->getType() != YamlParser::ElementType::PlainTextType) {
+                throw new AssertInvalidYamlElementType;
+            }
+            std::string* sItemId = (std::string*) (*itListIds)->getData();
+            int itemId = atoi(sItemId->c_str()); // item id
+            itemIds[j] = itemId;
+            j++;
+        }
+
+        expectedDistribution->insert(std::pair<int, int*>(idBucket, itemIds));
     }
 
     t->finish();
