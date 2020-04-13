@@ -6,6 +6,7 @@
 #include <scheduler/resources.h>
 #include <scheduler/bucket.h>
 #include <scheduler/item.h>
+#include <scheduler/strategy.h>
 
 namespace Scheduler {
     // scheduler
@@ -27,6 +28,8 @@ namespace Scheduler {
 
         // list items for schedule
         std::list<Item*>* pending_items;
+
+        StrategyType strategy;
     };
 }
 
