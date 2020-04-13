@@ -15,8 +15,11 @@ namespace Scheduler {
         Scheduler();
         // add bucket to pool
         void AddBucket(Bucket* bucket);
+
         // schedule item
         void ScheduleItem(Item* item);
+
+        void SetStrategy(StrategyType strategy);
 
         std::map<int, int*>* __GetDistributionItems();
     private:

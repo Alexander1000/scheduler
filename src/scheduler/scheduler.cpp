@@ -57,4 +57,9 @@ namespace Scheduler
         }
         return distribution;
     }
+
+    void Scheduler::SetStrategy(StrategyType strategy)
+    {
+        this->strategy = strategy;
+    }
 }
