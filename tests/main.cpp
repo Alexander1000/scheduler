@@ -31,6 +31,9 @@ class AssertInvalidYamlElementType
 class AssertInvalidResource
 {};
 
+class AssertInvalidStrategy
+{};
+
 typedef std::map<std::string, YamlParser::Element*> YamlObject;
 typedef std::list<YamlParser::Element*> YamlArray;
 typedef std::map<std::string, int> ResourceMapDict;
@@ -326,6 +329,23 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     t = new CppUnitTest::TestCase(testSuiteName->c_str());
     t->printTitle();
 
+    // make scheduler
+    Scheduler::Scheduler s;
+
+    itObject = rObj->find("strategy");
+    if (itObject == rObj->end()) {
+        throw new AssertPropertyNotExists;
+    }
+    if (itObject->second->getType() != YamlParser::ElementType::PlainTextType) {
+        throw new AssertInvalidYamlElementType;
+    }
+    std::string* strategyName = (std::string*) itObject->second->getData();
+    if (strategyName->find("simple") != std::string::npos) {
+        s.SetStrategy(Scheduler::StrategyType::SimpleType);
+    } else {
+        throw new AssertInvalidStrategy;
+    }
+
     // resource map: (eg: cpu=1; memory=2; gpu=3)
     std::map<std::string, int> resourceMap;
 
@@ -352,9 +372,6 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
         i++;
     }
-
-    // make scheduler
-    Scheduler::Scheduler s;
 
     // make buckets
 

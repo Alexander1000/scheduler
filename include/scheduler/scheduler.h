@@ -6,6 +6,7 @@
 #include <scheduler/resources.h>
 #include <scheduler/bucket.h>
 #include <scheduler/item.h>
+#include <scheduler/strategy.h>
 
 namespace Scheduler {
     // scheduler
@@ -14,8 +15,11 @@ namespace Scheduler {
         Scheduler();
         // add bucket to pool
         void AddBucket(Bucket* bucket);
+
         // schedule item
         void ScheduleItem(Item* item);
+
+        void SetStrategy(StrategyType strategy);
 
         std::map<int, int*>* __GetDistributionItems();
     private:
@@ -27,6 +31,8 @@ namespace Scheduler {
 
         // list items for schedule
         std::list<Item*>* pending_items;
+
+        StrategyType strategy;
     };
 }
 

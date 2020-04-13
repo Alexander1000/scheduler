@@ -8,6 +8,7 @@ namespace Scheduler
         this->resource_pool = new std::list<Resource*>;
         this->bucket_pool = new std::list<Bucket*>;
         this->pending_items = new std::list<Item*>;
+        this->strategy = StrategyType::SimpleType;
     }
 
     void Scheduler::AddBucket(Bucket* bucket)
@@ -55,5 +56,10 @@ namespace Scheduler
             distribution->emplace(bucket->GetID(), items);
         }
         return distribution;
+    }
+
+    void Scheduler::SetStrategy(StrategyType strategy)
+    {
+        this->strategy = strategy;
     }
 }

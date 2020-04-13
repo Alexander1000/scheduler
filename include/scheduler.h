@@ -5,5 +5,6 @@
 #include <scheduler/item.h>
 #include <scheduler/bucket.h>
 #include <scheduler/scheduler.h>
+#include <scheduler/strategy.h>
 
 #endif
