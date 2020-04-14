@@ -18,15 +18,18 @@ namespace Scheduler
 
     void Scheduler::ScheduleItem(Item* item)
     {
-        std::list<Bucket*>::iterator it;
         bool scheduled = false;
-        for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
-            Bucket* bucket = *it;
-            if (bucket->HasCapacityForItem(item)) {
-                bucket->AddItem(item);
-                item->SetBucket(bucket->GetID());
-                scheduled = true;
-                break;
+
+        if (this->strategy == StrategyType::SimpleType) {
+            std::list<Bucket *>::iterator it;
+            for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
+                Bucket *bucket = *it;
+                if (bucket->HasCapacityForItem(item)) {
+                    bucket->AddItem(item);
+                    item->SetBucket(bucket->GetID());
+                    scheduled = true;
+                    break;
+                }
             }
         }
 
