@@ -4,7 +4,12 @@
 namespace Scheduler
 {
     enum StrategyType {
-        SimpleType
+        // simple - first suitable
+        SimpleType,
+        // least loaded - least loaded
+        LeastLoadedType,
+        // deferred - accumulate in pending list items than try schedule it
+        DeferredType
     };
 };
 
