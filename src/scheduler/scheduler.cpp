@@ -34,7 +34,7 @@ namespace Scheduler
         }
 
         if (!scheduled) {
-            this->pending_items->push_front(item);
+            this->pending_items->push_back(item);
         }
     }
 
@@ -64,5 +64,10 @@ namespace Scheduler
     void Scheduler::SetStrategy(StrategyType strategy)
     {
         this->strategy = strategy;
+    }
+
+    void Scheduler::QueueItem(Item * item)
+    {
+        this->pending_items->push_back(item);
     }
 }

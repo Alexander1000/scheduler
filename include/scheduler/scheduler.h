@@ -21,6 +21,8 @@ namespace Scheduler {
 
         void SetStrategy(StrategyType strategy);
 
+        void QueueItem(Item* item);
+
         std::map<int, int*>* __GetDistributionItems();
     private:
         // pool of resources
