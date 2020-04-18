@@ -1,4 +1,4 @@
-name: 001-simple-schedule
+name: 003-least-loaded-schedule
 
 strategy: least loaded
 
