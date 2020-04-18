@@ -9,25 +9,28 @@
 
 #include "sequence.cpp"
 
-class AssertDistributionNotExists
+class AssertException
 {};
 
-class AssertItemNotFoundInBucket
+class AssertDistributionNotExists : AssertException
 {};
 
-class AssertUnExpectedItemExists
+class AssertItemNotFoundInBucket : AssertException
 {};
 
-class AssertPropertyNotExists
+class AssertUnExpectedItemExists : AssertException
 {};
 
-class AssertInvalidYamlElementType
+class AssertPropertyNotExists : AssertException
 {};
 
-class AssertInvalidResource
+class AssertInvalidYamlElementType : AssertException
 {};
 
-class AssertInvalidStrategy
+class AssertInvalidResource : AssertException
+{};
+
+class AssertInvalidStrategy : AssertException
 {};
 
 typedef std::map<std::string, YamlParser::Element*> YamlObject;
@@ -62,8 +65,10 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                 }
 
                 if (!found) {
+                    std::cout << std::endl;
                     std::cout << "Expected item #" << curItemId << " exists in bucket #" << itExpDistribution->first << std::endl;
                     if (itDistr->second != nullptr) {
+                        std::cout << std::endl;
                         std::cout << "List items in bucket #" << itExpDistribution->first << ": " << std::endl;
                         int j = 0;
                         while (itDistr->second[j] != 0) {
@@ -96,9 +101,11 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                     }
 
                     if (!found) {
+                        std::cout << std::endl;
                         std::cout << "Not expected item #" << curItemId << " exists in bucket #" << itDistr->first
                                   << std::endl;
                         if (itExpDistribution->second != nullptr) {
+                            std::cout << std::endl;
                             std::cout << "Expected list items in bucket #" << itExpDistribution->first << ": "
                                       << std::endl;
                             int j = 0;
@@ -124,6 +131,7 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
         std::map<int, int*>::iterator itExpDistr = expectedDistribution->find(itDistribution->first);
         if (itExpDistr == expectedDistribution->end()) {
             // not found
+            std::cout << std::endl;
             std::cout << "Unexpected distribution exists for bucket #" << itDistribution->first << std::endl;
             throw new AssertDistributionNotExists;
         } else {
@@ -406,8 +414,14 @@ int main() {
     // running from cmake-build-debug dir
     int n = scandir("../tests/data", &namelist, *filter, alphasort);
     for (int i = 0; i<n; i++) {
-        testSuite.addTestCase(testSchedule_YamlTestCase_Positive(namelist[i]->d_name));
+        try {
+            testSuite.addTestCase(testSchedule_YamlTestCase_Positive(namelist[i]->d_name));
+        } catch (...) {
+            std::cout << "The test case failed" << std::endl;
+        }
+
         free(namelist[i]);
+        std::cout << std::endl;
     }
     free(namelist);
 
