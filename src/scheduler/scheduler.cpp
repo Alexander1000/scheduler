@@ -31,6 +31,10 @@ namespace Scheduler
                     break;
                 }
             }
+        } else if (this->strategy == StrategyType::LeastLoadedType) {
+            // search least loaded bucket
+        } else if (this->strategy == StrategyType::DeferredType) {
+            // deferred
         }
 
         if (!scheduled) {
