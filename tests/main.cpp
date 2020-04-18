@@ -166,6 +166,15 @@ ResourceMap* parseResourcesFromYaml(YamlObject* objResources, ResourceMapDict* d
     return resourceMap;
 }
 
+void addResources(ResourceMap* dest, ResourceMap* source)
+{
+    ResourceMap::iterator itSource;
+    for (itSource = source->begin(); itSource != source->end(); ++itSource) {
+        ResourceMap::iterator itDest = dest->find(itSource->first);
+        itDest->second += itSource->second;
+    }
+}
+
 CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 {
     Sequence sequence;
@@ -216,7 +225,9 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     }
 
     // resource map: (eg: cpu=1; memory=2; gpu=3)
-    std::map<std::string, int> resourceMap;
+    ResourceMapDict resourceMap;
+
+    ResourceMap totalResources;
 
     // parse from yaml resource map
     itObject = rObj->find("resources");
@@ -239,6 +250,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         std::string* resourceName = (std::string*) (*itResources)->getData();
         // fill resource map
         resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
+        // init total resources
+        totalResources.insert(std::pair<int, int>(i, 0));
         i++;
     }
 
@@ -277,6 +290,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         // add bucket in scheduler
         s.AddBucket(new Scheduler::Bucket(i, resBucket));
+
+        addResources(&totalResources, resBucket);
 
         i++;
     }
@@ -379,6 +394,21 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         expectedDistribution->insert(std::pair<int, int*>(idBucket, itemIds));
     }
+
+    // Print total resources
+    std::cout << "< = = = = = = = = = >" << std::endl;
+    std::cout << "Initial total bucket resources:" << std::endl;
+    ResourceMap::iterator itTotalResources;
+    ResourceMapDict::iterator itDictResources;
+    for (itTotalResources = totalResources.begin(); itTotalResources != totalResources.end(); ++itTotalResources) {
+        for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
+            if (itTotalResources->first == itDictResources->second) {
+                std::cout << itDictResources->first << ": " << itTotalResources->second << std::endl;
+                break;
+            }
+        }
+    }
+    std::cout << "< = = = = = = = = = >" << std::endl;
 
     // distribution items in buckets
     DistributionMap* distribution = s.__GetDistributionItems();
