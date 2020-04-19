@@ -227,7 +227,11 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     // resource map: (eg: cpu=1; memory=2; gpu=3)
     ResourceMapDict resourceMap;
 
+    // total resources available
     ResourceMap totalResources;
+
+    // total item resources
+    ResourceMap totalItemResources;
 
     // parse from yaml resource map
     itObject = rObj->find("resources");
@@ -252,6 +256,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
         // init total resources
         totalResources.insert(std::pair<int, int>(i, 0));
+        // total item resources
+        totalItemResources.insert(std::pair<int, int>(i, 0));
         i++;
     }
 
@@ -334,6 +340,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         for (int j = 0; j < count; ++j) {
             s.ScheduleItem(new Scheduler::Item(sequence.GetNextID(), resourceItem));
+            addResources(&totalItemResources, resourceItem);
         }
     }
 
@@ -404,6 +411,21 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
             if (itTotalResources->first == itDictResources->second) {
                 std::cout << itDictResources->first << ": " << itTotalResources->second << std::endl;
+                break;
+            }
+        }
+    }
+    std::cout << "< = = = = = = = = = >" << std::endl;
+
+    std::cout << std::endl;
+
+    std::cout << "< = = = = = = = = = >" << std::endl;
+    std::cout << "Initial total item resources:" << std::endl;
+    ResourceMap::iterator itTotalItemResources;
+    for (itTotalItemResources = totalItemResources.begin(); itTotalItemResources != totalItemResources.end(); ++itTotalItemResources) {
+        for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
+            if (itTotalItemResources->first == itDictResources->second) {
+                std::cout << itDictResources->first << ": " << itTotalItemResources->second << std::endl;
                 break;
             }
         }
