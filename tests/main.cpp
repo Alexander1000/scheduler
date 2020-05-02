@@ -439,8 +439,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
     std::cout << "Distribution resources" << std::endl;
 
-    // (head + count buckets) x (bucket + count_items + resources(total + usage + left) + % + k)
-    ShellGrid::Grid gridBucketResourceDistribution(s.GetBucketPool()->size() + 1, 7);
+    // (head + count buckets + footer) x (bucket + count_items + resources(total + usage + left) + % + k)
+    ShellGrid::Grid gridBucketResourceDistribution(s.GetBucketPool()->size() + 2, 7);
     gridBucketResourceDistribution.Set(0, 0, new ShellGrid::CellString("Bucket"));
     gridBucketResourceDistribution.Set(0, 1, new ShellGrid::CellString("Count Items"));
     gridBucketResourceDistribution.Set(0, 2, new ShellGrid::CellString("Total resources"));
@@ -449,23 +449,29 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     gridBucketResourceDistribution.Set(0, 5, new ShellGrid::CellString("% resources"));
     gridBucketResourceDistribution.Set(0, 6, new ShellGrid::CellString("K"));
 
+    int totalItems = 0;
+    ResourceMap usedResourcesMap;
+    ResourceMap leftResourcesMap;
+
+    char* capacityResources = new char[100];
+    char* usageResources = new char[100];
+    char* leftResources = new char[100];
+    char* percentResources = new char[100];
+
     std::list<Scheduler::Bucket*>::iterator itBucketPool;
     for (itBucketPool = s.GetBucketPool()->begin(); itBucketPool != s.GetBucketPool()->end(); ++itBucketPool) {
         Scheduler::Bucket* bucket = (*itBucketPool);
         int bucketID = bucket->GetID();
 
-        gridBucketResourceDistribution.Set(bucketID, 0, new ShellGrid::CellNumeric(bucketID));
-        gridBucketResourceDistribution.Set(bucketID, 1, new ShellGrid::CellNumeric(bucket->GetItems()->size()));
-        // (*itBucketPool)->
-
-        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft, ioMemoryBufferPercent;
-        char* capacityResources = new char[100];
-        char* usageResources = new char[100];
-        char* leftResources = new char[100];
-        char* percentResources = new char[100];
-
         float koef = 0.0f;
         int countResources = 0;
+
+        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft, ioMemoryBufferPercent;
+
+        gridBucketResourceDistribution.Set(bucketID, 0, new ShellGrid::CellNumeric(bucketID));
+        gridBucketResourceDistribution.Set(bucketID, 1, new ShellGrid::CellNumeric(bucket->GetItems()->size()));
+
+        totalItems += bucket->GetItems()->size();
 
         ResourceMapDict::iterator itResourceMap, itResourceMapNext;
         for (itResourceMap = resourceMap.begin(); itResourceMap != resourceMap.end(); ++itResourceMap) {
@@ -523,6 +529,18 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
                 ioMemoryBufferLeft.write((char*) " / ", 3);
                 ioMemoryBufferPercent.write((char*) " / ", 3);
             }
+
+            if (usedResourcesMap.find(itResourceMap->second) != usedResourcesMap.end()) {
+                usedResourcesMap.find(itResourceMap->second)->second += usage;
+            } else {
+                usedResourcesMap.insert(std::pair<int, int>(itResourceMap->second, usage));
+            }
+
+            if (leftResourcesMap.find(itResourceMap->second) != leftResourcesMap.end()) {
+                leftResourcesMap.find(itResourceMap->second)->second += left;
+            } else {
+                leftResourcesMap.insert(std::pair<int, int>(itResourceMap->second, left));
+            }
         }
 
         memset(capacityResources, 0, 100 * sizeof(char));
@@ -547,6 +565,74 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         sprintf(koefResources, "%0.02f", koef);
         gridBucketResourceDistribution.Set(bucketID, 6, new ShellGrid::CellString(koefResources));
     }
+
+    // footer
+    int lastRow = s.GetBucketPool()->size() + 1;
+    float koef = 0.0f;
+    gridBucketResourceDistribution.Set(lastRow, 0, new ShellGrid::CellString("Total"));
+    gridBucketResourceDistribution.Set(lastRow, 1, new ShellGrid::CellNumeric(totalItems));
+
+    IOBuffer::IOMemoryBuffer ioMBCapacity, ioMBUsage, ioMBLeft, ioMBPercent;
+
+    ResourceMapDict::iterator itDictResourcesNext;
+    for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
+        int capacity, usage, left;
+
+        // capacity
+        memset(capacityResources, 0, 100 * sizeof(char));
+        capacity = totalResources.find(itDictResources->second)->second;
+        sprintf(capacityResources, "%d", capacity);
+        ioMBCapacity.write(capacityResources, strlen(capacityResources));
+
+        // usage
+        memset(usageResources, 0, 100 * sizeof(char));
+        usage = usedResourcesMap.find(itDictResources->second)->second;
+        sprintf(usageResources, "%d", usage);
+        ioMBUsage.write(usageResources, strlen(usageResources));
+
+        // left
+        memset(leftResources, 0, 100 * sizeof(char));
+        left = leftResourcesMap.find(itDictResources->second)->second;
+        sprintf(leftResources, "%d", left);
+        ioMBLeft.write(leftResources, strlen(leftResources));
+
+        float percent = ((float) usage / (float) capacity) * 100;
+        sprintf(percentResources, "%0.2f", percent);
+        ioMBPercent.write(percentResources, strlen(percentResources));
+
+        koef += (float) usage / (float) capacity;
+
+        itDictResourcesNext = itDictResources;
+        itDictResourcesNext++;
+        if (itDictResourcesNext != resourceMap.end()) {
+            ioMBCapacity.write((char*) " / ", 3);
+            ioMBUsage.write((char*) " / ", 3);
+            ioMBLeft.write((char*) " / ", 3);
+            ioMBPercent.write((char*) " / ", 3);
+        }
+    }
+
+    memset(capacityResources, 0, 100 * sizeof(char));
+    ioMBCapacity.read(capacityResources, 100);
+    gridBucketResourceDistribution.Set(lastRow, 2, new ShellGrid::CellString(capacityResources));
+
+    memset(usageResources, 0, 100 * sizeof(char));
+    ioMBUsage.read(usageResources, 100);
+    gridBucketResourceDistribution.Set(lastRow, 3, new ShellGrid::CellString(usageResources));
+
+    memset(leftResources, 0, 100 * sizeof(char));
+    ioMBLeft.read(leftResources, 100);
+    gridBucketResourceDistribution.Set(lastRow, 4, new ShellGrid::CellString(leftResources));
+
+    memset(percentResources, 0, 100 * sizeof(char));
+    ioMBPercent.read(percentResources, 100);
+    gridBucketResourceDistribution.Set(lastRow, 5, new ShellGrid::CellString(percentResources));
+
+    koef = (koef / (float) resourceMap.size()) * 100;
+    char* koefResources = new char[100];
+    memset(koefResources, 0, sizeof(char) * 100);
+    sprintf(koefResources, "%0.02f", koef);
+    gridBucketResourceDistribution.Set(lastRow, 6, new ShellGrid::CellString(koefResources));
 
     gridBucketResourceDistribution.Output();
 
