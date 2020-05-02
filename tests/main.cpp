@@ -458,13 +458,15 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         gridBucketResourceDistribution.Set(bucketID, 1, new ShellGrid::CellNumeric(bucket->GetItems()->size()));
         // (*itBucketPool)->
 
-        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity;
+        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft;
         char* capacityResources = new char[100];
+        char* usageResources = new char[100];
+        char* leftResources = new char[100];
 
         ResourceMapDict::iterator itResourceMap, itResourceMapNext;
         for (itResourceMap = resourceMap.begin(); itResourceMap != resourceMap.end(); ++itResourceMap) {
+            // capacity
             memset(capacityResources, 0, 100 * sizeof(char));
-
             if (bucket->GetCapacity()->find(itResourceMap->second) != bucket->GetCapacity()->end()) {
                 int capacity = bucket->GetCapacity()->find(itResourceMap->second)->second;
                 sprintf(capacityResources, "%d", capacity);
@@ -473,18 +475,46 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
                 ioMemoryBufferCapacity.write((char*) "0", 1);
             }
 
+            // usage
+            memset(usageResources, 0, 100 * sizeof(char));
+            if (bucket->GetUsage()->find(itResourceMap->second) != bucket->GetUsage()->end()) {
+                int usage = bucket->GetUsage()->find(itResourceMap->second)->second;
+                sprintf(usageResources, "%d", usage);
+                ioMemoryBufferUsage.write(usageResources, strlen(usageResources));
+            } else {
+                ioMemoryBufferUsage.write((char*) "0", 1);
+            }
+
+            // left
+            memset(leftResources, 0, 100 * sizeof(char));
+            if (bucket->GetLeft()->find(itResourceMap->second) != bucket->GetLeft()->end()) {
+                int left = bucket->GetLeft()->find(itResourceMap->second)->second;
+                sprintf(leftResources, "%d", left);
+                ioMemoryBufferLeft.write(leftResources, strlen(leftResources));
+            } else {
+                ioMemoryBufferLeft.write((char*) "0", 1);
+            }
+
             itResourceMapNext = itResourceMap;
             itResourceMapNext++;
             if (itResourceMapNext != resourceMap.end()) {
                 ioMemoryBufferCapacity.write((char*) " / ", 3);
+                ioMemoryBufferUsage.write((char*) " / ", 3);
+                ioMemoryBufferLeft.write((char*) " / ", 3);
             }
         }
 
         memset(capacityResources, 0, 100 * sizeof(char));
-        ioMemoryBufferCapacity.setPosition(0);
         ioMemoryBufferCapacity.read(capacityResources, 100);
-
         gridBucketResourceDistribution.Set(bucketID, 2, new ShellGrid::CellString(capacityResources));
+
+        memset(usageResources, 0, 100 * sizeof(char));
+        ioMemoryBufferUsage.read(usageResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 3, new ShellGrid::CellString(usageResources));
+
+        memset(leftResources, 0, 100 * sizeof(char));
+        ioMemoryBufferLeft.read(leftResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 4, new ShellGrid::CellString(leftResources));
     }
 
     gridBucketResourceDistribution.Output();
