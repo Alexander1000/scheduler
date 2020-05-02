@@ -77,6 +77,12 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                             std::cout << "#" << itDistr->second[j] << std::endl;
                             j++;
                         }
+                        std::cout << "Expected items:" << std::endl;
+                        j = 0;
+                        while (itExpDistribution->second[j] != 0) {
+                            std::cout << "#" << itExpDistribution->second[j] << std::endl;
+                            j++;
+                        }
                     }
 
                     throw new AssertItemNotFoundInBucket;
