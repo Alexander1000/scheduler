@@ -439,7 +439,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
     std::cout << "Distribution resources" << std::endl;
 
-    // count buckets x (total + usage + left + % + k)
+    // (head + count buckets) x (bucket + count_items + resources(total + usage + left) + % + k)
     ShellGrid::Grid gridBucketResourceDistribution(s.GetBucketPool()->size() + 1, 7);
     gridBucketResourceDistribution.Set(0, 0, new ShellGrid::CellString("Bucket"));
     gridBucketResourceDistribution.Set(0, 1, new ShellGrid::CellString("Count Items"));
