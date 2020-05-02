@@ -39,7 +39,32 @@ namespace Scheduler
             std::list<Bucket*>::iterator itBucket;
             for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
                 Bucket* bucket = (*itBucket);
-                bucketScore.insert(std::pair<int, float>(bucket->GetID(), bucket->GetFillRate()));
+                if (bucket->HasCapacityForItem(item)) {
+                    bucketScore.insert(std::pair<int, float>(bucket->GetID(), bucket->GetFillRate()));
+                }
+            }
+            if (bucketScore.size() > 0) {
+                int bucketID = 0;
+                float bestScore = 2.0f;
+
+                std::map<int, float>::iterator itBucketScore;
+                for (itBucketScore = bucketScore.begin(); itBucketScore != bucketScore.end(); ++itBucketScore) {
+                    if (itBucketScore->second < bestScore) {
+                        bucketID = itBucketScore->first;
+                        bestScore = itBucketScore->second;
+                    }
+                }
+                if (bucketID > 0) {
+                    for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+                        Bucket* bucket = (*itBucket);
+                        if (bucket->GetID() == bucketID) {
+                            bucket->AddItem(item);
+                            item->SetBucket(bucket->GetID());
+                            scheduled = true;
+                            break;
+                        }
+                    }
+                }
             }
         } else if (this->strategy == StrategyType::DeferredType) {
             // deferred
