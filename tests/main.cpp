@@ -458,41 +458,56 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         gridBucketResourceDistribution.Set(bucketID, 1, new ShellGrid::CellNumeric(bucket->GetItems()->size()));
         // (*itBucketPool)->
 
-        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft;
+        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft, ioMemoryBufferPercent;
         char* capacityResources = new char[100];
         char* usageResources = new char[100];
         char* leftResources = new char[100];
+        char* percentResources = new char[100];
 
         ResourceMapDict::iterator itResourceMap, itResourceMapNext;
         for (itResourceMap = resourceMap.begin(); itResourceMap != resourceMap.end(); ++itResourceMap) {
+            int capacity, usage, left;
+
             // capacity
             memset(capacityResources, 0, 100 * sizeof(char));
             if (bucket->GetCapacity()->find(itResourceMap->second) != bucket->GetCapacity()->end()) {
-                int capacity = bucket->GetCapacity()->find(itResourceMap->second)->second;
+                capacity = bucket->GetCapacity()->find(itResourceMap->second)->second;
                 sprintf(capacityResources, "%d", capacity);
                 ioMemoryBufferCapacity.write(capacityResources, strlen(capacityResources));
             } else {
+                capacity = 0;
                 ioMemoryBufferCapacity.write((char*) "0", 1);
             }
 
             // usage
             memset(usageResources, 0, 100 * sizeof(char));
             if (bucket->GetUsage()->find(itResourceMap->second) != bucket->GetUsage()->end()) {
-                int usage = bucket->GetUsage()->find(itResourceMap->second)->second;
+                usage = bucket->GetUsage()->find(itResourceMap->second)->second;
                 sprintf(usageResources, "%d", usage);
                 ioMemoryBufferUsage.write(usageResources, strlen(usageResources));
             } else {
+                usage = 0;
                 ioMemoryBufferUsage.write((char*) "0", 1);
             }
 
             // left
             memset(leftResources, 0, 100 * sizeof(char));
             if (bucket->GetLeft()->find(itResourceMap->second) != bucket->GetLeft()->end()) {
-                int left = bucket->GetLeft()->find(itResourceMap->second)->second;
+                left = bucket->GetLeft()->find(itResourceMap->second)->second;
                 sprintf(leftResources, "%d", left);
                 ioMemoryBufferLeft.write(leftResources, strlen(leftResources));
             } else {
+                left = 0;
                 ioMemoryBufferLeft.write((char*) "0", 1);
+            }
+
+            memset(percentResources, 0, sizeof(char));
+            if (capacity > 0) {
+                float percent = ((float) usage / (float) capacity) * 100;
+                sprintf(percentResources, "%0.2f", percent);
+                ioMemoryBufferPercent.write(percentResources, strlen(percentResources));
+            } else {
+                ioMemoryBufferPercent.write((char*) "NULL", 4);
             }
 
             itResourceMapNext = itResourceMap;
@@ -501,6 +516,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
                 ioMemoryBufferCapacity.write((char*) " / ", 3);
                 ioMemoryBufferUsage.write((char*) " / ", 3);
                 ioMemoryBufferLeft.write((char*) " / ", 3);
+                ioMemoryBufferPercent.write((char*) " / ", 3);
             }
         }
 
@@ -515,6 +531,10 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         memset(leftResources, 0, 100 * sizeof(char));
         ioMemoryBufferLeft.read(leftResources, 100);
         gridBucketResourceDistribution.Set(bucketID, 4, new ShellGrid::CellString(leftResources));
+
+        memset(percentResources, 0, 100 * sizeof(char));
+        ioMemoryBufferPercent.read(percentResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 5, new ShellGrid::CellString(percentResources));
     }
 
     gridBucketResourceDistribution.Output();
