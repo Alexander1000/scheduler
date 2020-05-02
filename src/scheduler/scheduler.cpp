@@ -66,6 +66,8 @@ namespace Scheduler
                     }
                 }
             }
+        } else if (this->strategy == StrategyType::StatisticType) {
+            // statistic
         } else if (this->strategy == StrategyType::DeferredType) {
             // deferred
         }

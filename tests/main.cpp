@@ -226,6 +226,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         s.SetStrategy(Scheduler::StrategyType::SimpleType);
     } else if (strategyName->find("least loaded") != std::string::npos) {
         s.SetStrategy(Scheduler::StrategyType::LeastLoadedType);
+    } else if (strategyName->find("statistic") != std::string::npos) {
+        s.SetStrategy(Scheduler::StrategyType::StatisticType);
     } else if (strategyName->find("deferred") != std::string::npos) {
         s.SetStrategy(Scheduler::StrategyType::DeferredType);
     } else {
