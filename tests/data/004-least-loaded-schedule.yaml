@@ -1,6 +1,6 @@
 name: 004-least-loaded-schedule
 
-strategy: simple
+strategy: least loaded
 
 resources:
   - cpu
