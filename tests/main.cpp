@@ -403,8 +403,10 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         expectedDistribution->insert(std::pair<int, int*>(idBucket, itemIds));
     }
 
-    // Print total resources
+    // Print info
     std::cout << "< = = = = = = = = = >" << std::endl;
+
+    // Print total resources
     std::cout << "Initial total bucket resources:" << std::endl;
     ShellGrid::Grid gridTotalResources(resourceMap.size(), 2);
     ResourceMap::iterator itTotalResources;
