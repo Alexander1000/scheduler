@@ -6,6 +6,7 @@
 #include <vector>
 #include <io-buffer.h>
 #include <yaml-parser.h>
+#include <shell-grid.h>
 
 #include "sequence.cpp"
 
@@ -421,15 +422,18 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
     std::cout << "< = = = = = = = = = >" << std::endl;
     std::cout << "Initial total item resources:" << std::endl;
+    ShellGrid::Grid grid(resourceMap.size(), 2);
     ResourceMap::iterator itTotalItemResources;
     for (itTotalItemResources = totalItemResources.begin(); itTotalItemResources != totalItemResources.end(); ++itTotalItemResources) {
         for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
             if (itTotalItemResources->first == itDictResources->second) {
-                std::cout << itDictResources->first << ": " << itTotalItemResources->second << std::endl;
+                grid.Set(itDictResources->second - 1, 0, new ShellGrid::CellString(itDictResources->first));
+                grid.Set(itDictResources->second - 1, 1, new ShellGrid::CellNumeric(itTotalItemResources->second));
                 break;
             }
         }
     }
+    grid.Output();
     std::cout << "< = = = = = = = = = >" << std::endl;
 
     // distribution items in buckets

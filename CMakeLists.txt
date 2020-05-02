@@ -49,6 +49,9 @@ message(STATUS "Found io-buffer library: ${IO_BUFFER}")
 find_library(YAML_PARSER libyaml-parser.a)
 message(STATUS "Found yaml-parser library: ${YAML_PARSER}")
 
+find_library(SHELL_GRID libshell-grid.a)
+message(STATUS "Found shell-grid: ${SHELL_GRID}")
+
 add_executable(
     ${PROJECT_NAME} tests/main.cpp
     ${SCHEDULER_SOURCES_TEST}
@@ -58,4 +61,5 @@ target_link_libraries(${PROJECT_NAME}
     ${CPP_UNIT_TEST}
     ${IO_BUFFER}
     ${YAML_PARSER}
+    ${SHELL_GRID}
 )
