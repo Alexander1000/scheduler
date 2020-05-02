@@ -406,35 +406,35 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     // Print total resources
     std::cout << "< = = = = = = = = = >" << std::endl;
     std::cout << "Initial total bucket resources:" << std::endl;
+    ShellGrid::Grid gridTotalResources(resourceMap.size(), 2);
     ResourceMap::iterator itTotalResources;
     ResourceMapDict::iterator itDictResources;
     for (itTotalResources = totalResources.begin(); itTotalResources != totalResources.end(); ++itTotalResources) {
         for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
             if (itTotalResources->first == itDictResources->second) {
-                std::cout << itDictResources->first << ": " << itTotalResources->second << std::endl;
+                gridTotalResources.Set(itDictResources->second - 1, 0, new ShellGrid::CellString(itDictResources->first));
+                gridTotalResources.Set(itDictResources->second - 1, 1, new ShellGrid::CellNumeric(itTotalResources->second));
                 break;
             }
         }
     }
-    std::cout << "< = = = = = = = = = >" << std::endl;
+    gridTotalResources.Output();
 
     std::cout << std::endl;
 
-    std::cout << "< = = = = = = = = = >" << std::endl;
     std::cout << "Initial total item resources:" << std::endl;
-    ShellGrid::Grid grid(resourceMap.size(), 2);
+    ShellGrid::Grid gridItemResources(resourceMap.size(), 2);
     ResourceMap::iterator itTotalItemResources;
     for (itTotalItemResources = totalItemResources.begin(); itTotalItemResources != totalItemResources.end(); ++itTotalItemResources) {
         for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
             if (itTotalItemResources->first == itDictResources->second) {
-                grid.Set(itDictResources->second - 1, 0, new ShellGrid::CellString(itDictResources->first));
-                grid.Set(itDictResources->second - 1, 1, new ShellGrid::CellNumeric(itTotalItemResources->second));
+                gridItemResources.Set(itDictResources->second - 1, 0, new ShellGrid::CellString(itDictResources->first));
+                gridItemResources.Set(itDictResources->second - 1, 1, new ShellGrid::CellNumeric(itTotalItemResources->second));
                 break;
             }
         }
     }
-    grid.Output();
-    std::cout << "< = = = = = = = = = >" << std::endl;
+    gridItemResources.Output();
 
     // distribution items in buckets
     DistributionMap* distribution = s.__GetDistributionItems();
