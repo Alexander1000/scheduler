@@ -7,6 +7,7 @@
 #include <io-buffer.h>
 #include <yaml-parser.h>
 #include <shell-grid.h>
+#include <memory>
 
 #include "sequence.cpp"
 
@@ -450,8 +451,40 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
     std::list<Scheduler::Bucket*>::iterator itBucketPool;
     for (itBucketPool = s.GetBucketPool()->begin(); itBucketPool != s.GetBucketPool()->end(); ++itBucketPool) {
-        gridBucketResourceDistribution.Set((*itBucketPool)->GetID(), 0, new ShellGrid::CellNumeric((*itBucketPool)->GetID()));
+        Scheduler::Bucket* bucket = (*itBucketPool);
+        int bucketID = bucket->GetID();
+
+        gridBucketResourceDistribution.Set(bucketID, 0, new ShellGrid::CellNumeric(bucketID));
+        gridBucketResourceDistribution.Set(bucketID, 1, new ShellGrid::CellNumeric(bucket->GetItems()->size()));
         // (*itBucketPool)->
+
+        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity;
+        char* capacityResources = new char[100];
+
+        ResourceMapDict::iterator itResourceMap, itResourceMapNext;
+        for (itResourceMap = resourceMap.begin(); itResourceMap != resourceMap.end(); ++itResourceMap) {
+            memset(capacityResources, 0, 100 * sizeof(char));
+
+            if (bucket->GetCapacity()->find(itResourceMap->second) != bucket->GetCapacity()->end()) {
+                int capacity = bucket->GetCapacity()->find(itResourceMap->second)->second;
+                sprintf(capacityResources, "%d", capacity);
+                ioMemoryBufferCapacity.write(capacityResources, strlen(capacityResources));
+            } else {
+                ioMemoryBufferCapacity.write((char*) "0", 1);
+            }
+
+            itResourceMapNext = itResourceMap;
+            itResourceMapNext++;
+            if (itResourceMapNext != resourceMap.end()) {
+                ioMemoryBufferCapacity.write((char*) " / ", 3);
+            }
+        }
+
+        memset(capacityResources, 0, 100 * sizeof(char));
+        ioMemoryBufferCapacity.setPosition(0);
+        ioMemoryBufferCapacity.read(capacityResources, 100);
+
+        gridBucketResourceDistribution.Set(bucketID, 2, new ShellGrid::CellString(capacityResources));
     }
 
     gridBucketResourceDistribution.Output();
