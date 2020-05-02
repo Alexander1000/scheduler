@@ -1,5 +1,6 @@
 #include <scheduler.h>
 #include <list>
+#include <map>
 
 namespace Scheduler
 {
@@ -21,6 +22,7 @@ namespace Scheduler
         bool scheduled = false;
 
         if (this->strategy == StrategyType::SimpleType) {
+            // schedule first compatible bucket
             std::list<Bucket *>::iterator it;
             for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
                 Bucket *bucket = *it;
@@ -33,6 +35,12 @@ namespace Scheduler
             }
         } else if (this->strategy == StrategyType::LeastLoadedType) {
             // search least loaded bucket
+            std::map<int, float> bucketScore;
+            std::list<Bucket*>::iterator itBucket;
+            for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+                Bucket* bucket = (*itBucket);
+                bucketScore.insert(std::pair<int, float>(bucket->GetID(), bucket->GetFillRate()));
+            }
         } else if (this->strategy == StrategyType::DeferredType) {
             // deferred
         }

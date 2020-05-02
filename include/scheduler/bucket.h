@@ -17,6 +17,7 @@ namespace Scheduler {
         std::map<int, int>* GetCapacity();
         std::map<int, int>* GetUsage();
         std::map<int, int>* GetLeft();
+        float GetFillRate();
     private:
         // identifier of bucket
         int id;

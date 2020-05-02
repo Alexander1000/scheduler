@@ -89,4 +89,20 @@ namespace Scheduler
     {
         return this->left;
     }
+
+    float Bucket::GetFillRate()
+    {
+        float k = 0.0f;
+        std::map<int, int>::iterator itCapacity;
+        for (itCapacity = this->capacity->begin(); itCapacity != this->capacity->end(); ++itCapacity) {
+            int usage = 0;
+            if (this->usage->find(itCapacity->first) != this->usage->end()) {
+                usage = this->usage->find(itCapacity->first)->second;
+            }
+
+            k += (float) usage /  (float) itCapacity->second;
+        }
+
+        return k / (float) this->capacity->size();
+    }
 }
