@@ -74,4 +74,9 @@ namespace Scheduler
     {
         this->pending_items->push_back(item);
     }
+
+    std::list<Bucket*>* Scheduler::GetBucketPool()
+    {
+        return this->bucket_pool;
+    }
 }

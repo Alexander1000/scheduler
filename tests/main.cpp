@@ -438,6 +438,24 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     }
     gridItemResources.Output();
 
+    // count buckets x (total + usage + left + % + k)
+    ShellGrid::Grid gridBucketResourceDistribution(s.GetBucketPool()->size() + 1, 7);
+    gridBucketResourceDistribution.Set(0, 0, new ShellGrid::CellString("Bucket"));
+    gridBucketResourceDistribution.Set(0, 1, new ShellGrid::CellString("Count Items"));
+    gridBucketResourceDistribution.Set(0, 2, new ShellGrid::CellString("Total resources"));
+    gridBucketResourceDistribution.Set(0, 3, new ShellGrid::CellString("Usage resources"));
+    gridBucketResourceDistribution.Set(0, 4, new ShellGrid::CellString("Left resources"));
+    gridBucketResourceDistribution.Set(0, 5, new ShellGrid::CellString("% resources"));
+    gridBucketResourceDistribution.Set(0, 6, new ShellGrid::CellString("K"));
+
+    std::list<Scheduler::Bucket*>::iterator itBucketPool;
+    for (itBucketPool = s.GetBucketPool()->begin(); itBucketPool != s.GetBucketPool()->end(); ++itBucketPool) {
+        gridBucketResourceDistribution.Set((*itBucketPool)->GetID(), 0, new ShellGrid::CellNumeric((*itBucketPool)->GetID()));
+        // (*itBucketPool)->
+    }
+
+    gridBucketResourceDistribution.Output();
+
     // distribution items in buckets
     DistributionMap* distribution = s.__GetDistributionItems();
 
