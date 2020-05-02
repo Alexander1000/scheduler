@@ -464,6 +464,9 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         char* leftResources = new char[100];
         char* percentResources = new char[100];
 
+        float koef = 0.0f;
+        int countResources = 0;
+
         ResourceMapDict::iterator itResourceMap, itResourceMapNext;
         for (itResourceMap = resourceMap.begin(); itResourceMap != resourceMap.end(); ++itResourceMap) {
             int capacity, usage, left;
@@ -503,9 +506,11 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
             memset(percentResources, 0, sizeof(char));
             if (capacity > 0) {
+                countResources++;
                 float percent = ((float) usage / (float) capacity) * 100;
                 sprintf(percentResources, "%0.2f", percent);
                 ioMemoryBufferPercent.write(percentResources, strlen(percentResources));
+                koef += (float) usage / (float) capacity;
             } else {
                 ioMemoryBufferPercent.write((char*) "NULL", 4);
             }
@@ -535,6 +540,12 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         memset(percentResources, 0, 100 * sizeof(char));
         ioMemoryBufferPercent.read(percentResources, 100);
         gridBucketResourceDistribution.Set(bucketID, 5, new ShellGrid::CellString(percentResources));
+
+        koef = (koef / (float) countResources) * 100;
+        char* koefResources = new char[100];
+        memset(koefResources, 0, sizeof(char) * 100);
+        sprintf(koefResources, "%0.02f", koef);
+        gridBucketResourceDistribution.Set(bucketID, 6, new ShellGrid::CellString(koefResources));
     }
 
     gridBucketResourceDistribution.Output();
