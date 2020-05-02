@@ -74,4 +74,19 @@ namespace Scheduler
     {
         return this->items;
     }
+
+    std::map<int, int>* Bucket::GetCapacity()
+    {
+        return this->capacity;
+    }
+
+    std::map<int, int>* Bucket::GetUsage()
+    {
+        return this->usage;
+    }
+
+    std::map<int, int>* Bucket::GetLeft()
+    {
+        return this->left;
+    }
 }

@@ -31,6 +31,10 @@ namespace Scheduler
                     break;
                 }
             }
+        } else if (this->strategy == StrategyType::LeastLoadedType) {
+            // search least loaded bucket
+        } else if (this->strategy == StrategyType::DeferredType) {
+            // deferred
         }
 
         if (!scheduled) {
@@ -69,5 +73,10 @@ namespace Scheduler
     void Scheduler::QueueItem(Item * item)
     {
         this->pending_items->push_back(item);
+    }
+
+    std::list<Bucket*>* Scheduler::GetBucketPool()
+    {
+        return this->bucket_pool;
     }
 }

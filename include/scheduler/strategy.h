@@ -11,6 +11,6 @@ namespace Scheduler
         // deferred - accumulate in pending list items than try schedule it
         DeferredType
     };
-};
+}
 
 #endif

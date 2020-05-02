@@ -24,6 +24,8 @@ namespace Scheduler {
         void QueueItem(Item* item);
 
         std::map<int, int*>* __GetDistributionItems();
+
+        std::list<Bucket*>* GetBucketPool();
     private:
         // pool of resources
         std::list<Resource*>* resource_pool;

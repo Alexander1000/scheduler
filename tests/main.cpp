@@ -6,28 +6,33 @@
 #include <vector>
 #include <io-buffer.h>
 #include <yaml-parser.h>
+#include <shell-grid.h>
+#include <memory>
 
 #include "sequence.cpp"
 
-class AssertDistributionNotExists
+class AssertException
 {};
 
-class AssertItemNotFoundInBucket
+class AssertDistributionNotExists : AssertException
 {};
 
-class AssertUnExpectedItemExists
+class AssertItemNotFoundInBucket : AssertException
 {};
 
-class AssertPropertyNotExists
+class AssertUnExpectedItemExists : AssertException
 {};
 
-class AssertInvalidYamlElementType
+class AssertPropertyNotExists : AssertException
 {};
 
-class AssertInvalidResource
+class AssertInvalidYamlElementType : AssertException
 {};
 
-class AssertInvalidStrategy
+class AssertInvalidResource : AssertException
+{};
+
+class AssertInvalidStrategy : AssertException
 {};
 
 typedef std::map<std::string, YamlParser::Element*> YamlObject;
@@ -62,8 +67,10 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                 }
 
                 if (!found) {
+                    std::cout << std::endl;
                     std::cout << "Expected item #" << curItemId << " exists in bucket #" << itExpDistribution->first << std::endl;
                     if (itDistr->second != nullptr) {
+                        std::cout << std::endl;
                         std::cout << "List items in bucket #" << itExpDistribution->first << ": " << std::endl;
                         int j = 0;
                         while (itDistr->second[j] != 0) {
@@ -96,9 +103,11 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
                     }
 
                     if (!found) {
+                        std::cout << std::endl;
                         std::cout << "Not expected item #" << curItemId << " exists in bucket #" << itDistr->first
                                   << std::endl;
                         if (itExpDistribution->second != nullptr) {
+                            std::cout << std::endl;
                             std::cout << "Expected list items in bucket #" << itExpDistribution->first << ": "
                                       << std::endl;
                             int j = 0;
@@ -124,6 +133,7 @@ void assertDistribution(CppUnitTest::TestCase* t, std::map<int, int*>* expectedD
         std::map<int, int*>::iterator itExpDistr = expectedDistribution->find(itDistribution->first);
         if (itExpDistr == expectedDistribution->end()) {
             // not found
+            std::cout << std::endl;
             std::cout << "Unexpected distribution exists for bucket #" << itDistribution->first << std::endl;
             throw new AssertDistributionNotExists;
         } else {
@@ -156,6 +166,15 @@ ResourceMap* parseResourcesFromYaml(YamlObject* objResources, ResourceMapDict* d
     }
 
     return resourceMap;
+}
+
+void addResources(ResourceMap* dest, ResourceMap* source)
+{
+    ResourceMap::iterator itSource;
+    for (itSource = source->begin(); itSource != source->end(); ++itSource) {
+        ResourceMap::iterator itDest = dest->find(itSource->first);
+        itDest->second += itSource->second;
+    }
 }
 
 CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
@@ -208,7 +227,13 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     }
 
     // resource map: (eg: cpu=1; memory=2; gpu=3)
-    std::map<std::string, int> resourceMap;
+    ResourceMapDict resourceMap;
+
+    // total resources available
+    ResourceMap totalResources;
+
+    // total item resources
+    ResourceMap totalItemResources;
 
     // parse from yaml resource map
     itObject = rObj->find("resources");
@@ -231,6 +256,10 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         std::string* resourceName = (std::string*) (*itResources)->getData();
         // fill resource map
         resourceMap.insert(std::pair<std::string, int>(*resourceName, i));
+        // init total resources
+        totalResources.insert(std::pair<int, int>(i, 0));
+        // total item resources
+        totalItemResources.insert(std::pair<int, int>(i, 0));
         i++;
     }
 
@@ -269,6 +298,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         // add bucket in scheduler
         s.AddBucket(new Scheduler::Bucket(i, resBucket));
+
+        addResources(&totalResources, resBucket);
 
         i++;
     }
@@ -311,6 +342,7 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
         for (int j = 0; j < count; ++j) {
             s.ScheduleItem(new Scheduler::Item(sequence.GetNextID(), resourceItem));
+            addResources(&totalItemResources, resourceItem);
         }
     }
 
@@ -372,6 +404,152 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         expectedDistribution->insert(std::pair<int, int*>(idBucket, itemIds));
     }
 
+    // Print info
+    std::cout << "< = = = = = = = = = >" << std::endl;
+
+    // Print total resources
+    std::cout << "Initial total bucket resources:" << std::endl;
+    ShellGrid::Grid gridTotalResources(resourceMap.size(), 2);
+    ResourceMap::iterator itTotalResources;
+    ResourceMapDict::iterator itDictResources;
+    for (itTotalResources = totalResources.begin(); itTotalResources != totalResources.end(); ++itTotalResources) {
+        for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
+            if (itTotalResources->first == itDictResources->second) {
+                gridTotalResources.Set(itDictResources->second - 1, 0, new ShellGrid::CellString(itDictResources->first));
+                gridTotalResources.Set(itDictResources->second - 1, 1, new ShellGrid::CellNumeric(itTotalResources->second));
+                break;
+            }
+        }
+    }
+    gridTotalResources.Output();
+
+    std::cout << std::endl;
+
+    std::cout << "Initial total item resources:" << std::endl;
+    ShellGrid::Grid gridItemResources(resourceMap.size(), 2);
+    ResourceMap::iterator itTotalItemResources;
+    for (itTotalItemResources = totalItemResources.begin(); itTotalItemResources != totalItemResources.end(); ++itTotalItemResources) {
+        for (itDictResources = resourceMap.begin(); itDictResources != resourceMap.end(); ++itDictResources) {
+            if (itTotalItemResources->first == itDictResources->second) {
+                gridItemResources.Set(itDictResources->second - 1, 0, new ShellGrid::CellString(itDictResources->first));
+                gridItemResources.Set(itDictResources->second - 1, 1, new ShellGrid::CellNumeric(itTotalItemResources->second));
+                break;
+            }
+        }
+    }
+    gridItemResources.Output();
+
+    // count buckets x (total + usage + left + % + k)
+    ShellGrid::Grid gridBucketResourceDistribution(s.GetBucketPool()->size() + 1, 7);
+    gridBucketResourceDistribution.Set(0, 0, new ShellGrid::CellString("Bucket"));
+    gridBucketResourceDistribution.Set(0, 1, new ShellGrid::CellString("Count Items"));
+    gridBucketResourceDistribution.Set(0, 2, new ShellGrid::CellString("Total resources"));
+    gridBucketResourceDistribution.Set(0, 3, new ShellGrid::CellString("Usage resources"));
+    gridBucketResourceDistribution.Set(0, 4, new ShellGrid::CellString("Left resources"));
+    gridBucketResourceDistribution.Set(0, 5, new ShellGrid::CellString("% resources"));
+    gridBucketResourceDistribution.Set(0, 6, new ShellGrid::CellString("K"));
+
+    std::list<Scheduler::Bucket*>::iterator itBucketPool;
+    for (itBucketPool = s.GetBucketPool()->begin(); itBucketPool != s.GetBucketPool()->end(); ++itBucketPool) {
+        Scheduler::Bucket* bucket = (*itBucketPool);
+        int bucketID = bucket->GetID();
+
+        gridBucketResourceDistribution.Set(bucketID, 0, new ShellGrid::CellNumeric(bucketID));
+        gridBucketResourceDistribution.Set(bucketID, 1, new ShellGrid::CellNumeric(bucket->GetItems()->size()));
+        // (*itBucketPool)->
+
+        IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft, ioMemoryBufferPercent;
+        char* capacityResources = new char[100];
+        char* usageResources = new char[100];
+        char* leftResources = new char[100];
+        char* percentResources = new char[100];
+
+        float koef = 0.0f;
+        int countResources = 0;
+
+        ResourceMapDict::iterator itResourceMap, itResourceMapNext;
+        for (itResourceMap = resourceMap.begin(); itResourceMap != resourceMap.end(); ++itResourceMap) {
+            int capacity, usage, left;
+
+            // capacity
+            memset(capacityResources, 0, 100 * sizeof(char));
+            if (bucket->GetCapacity()->find(itResourceMap->second) != bucket->GetCapacity()->end()) {
+                capacity = bucket->GetCapacity()->find(itResourceMap->second)->second;
+                sprintf(capacityResources, "%d", capacity);
+                ioMemoryBufferCapacity.write(capacityResources, strlen(capacityResources));
+            } else {
+                capacity = 0;
+                ioMemoryBufferCapacity.write((char*) "0", 1);
+            }
+
+            // usage
+            memset(usageResources, 0, 100 * sizeof(char));
+            if (bucket->GetUsage()->find(itResourceMap->second) != bucket->GetUsage()->end()) {
+                usage = bucket->GetUsage()->find(itResourceMap->second)->second;
+                sprintf(usageResources, "%d", usage);
+                ioMemoryBufferUsage.write(usageResources, strlen(usageResources));
+            } else {
+                usage = 0;
+                ioMemoryBufferUsage.write((char*) "0", 1);
+            }
+
+            // left
+            memset(leftResources, 0, 100 * sizeof(char));
+            if (bucket->GetLeft()->find(itResourceMap->second) != bucket->GetLeft()->end()) {
+                left = bucket->GetLeft()->find(itResourceMap->second)->second;
+                sprintf(leftResources, "%d", left);
+                ioMemoryBufferLeft.write(leftResources, strlen(leftResources));
+            } else {
+                left = 0;
+                ioMemoryBufferLeft.write((char*) "0", 1);
+            }
+
+            memset(percentResources, 0, sizeof(char));
+            if (capacity > 0) {
+                countResources++;
+                float percent = ((float) usage / (float) capacity) * 100;
+                sprintf(percentResources, "%0.2f", percent);
+                ioMemoryBufferPercent.write(percentResources, strlen(percentResources));
+                koef += (float) usage / (float) capacity;
+            } else {
+                ioMemoryBufferPercent.write((char*) "NULL", 4);
+            }
+
+            itResourceMapNext = itResourceMap;
+            itResourceMapNext++;
+            if (itResourceMapNext != resourceMap.end()) {
+                ioMemoryBufferCapacity.write((char*) " / ", 3);
+                ioMemoryBufferUsage.write((char*) " / ", 3);
+                ioMemoryBufferLeft.write((char*) " / ", 3);
+                ioMemoryBufferPercent.write((char*) " / ", 3);
+            }
+        }
+
+        memset(capacityResources, 0, 100 * sizeof(char));
+        ioMemoryBufferCapacity.read(capacityResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 2, new ShellGrid::CellString(capacityResources));
+
+        memset(usageResources, 0, 100 * sizeof(char));
+        ioMemoryBufferUsage.read(usageResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 3, new ShellGrid::CellString(usageResources));
+
+        memset(leftResources, 0, 100 * sizeof(char));
+        ioMemoryBufferLeft.read(leftResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 4, new ShellGrid::CellString(leftResources));
+
+        memset(percentResources, 0, 100 * sizeof(char));
+        ioMemoryBufferPercent.read(percentResources, 100);
+        gridBucketResourceDistribution.Set(bucketID, 5, new ShellGrid::CellString(percentResources));
+
+        koef = (koef / (float) countResources) * 100;
+        char* koefResources = new char[100];
+        memset(koefResources, 0, sizeof(char) * 100);
+        sprintf(koefResources, "%0.02f", koef);
+        gridBucketResourceDistribution.Set(bucketID, 6, new ShellGrid::CellString(koefResources));
+    }
+
+    gridBucketResourceDistribution.Output();
+
     // distribution items in buckets
     DistributionMap* distribution = s.__GetDistributionItems();
 
@@ -406,8 +584,14 @@ int main() {
     // running from cmake-build-debug dir
     int n = scandir("../tests/data", &namelist, *filter, alphasort);
     for (int i = 0; i<n; i++) {
-        testSuite.addTestCase(testSchedule_YamlTestCase_Positive(namelist[i]->d_name));
+        try {
+            testSuite.addTestCase(testSchedule_YamlTestCase_Positive(namelist[i]->d_name));
+        } catch (...) {
+            std::cout << "The test case failed" << std::endl;
+        }
+
         free(namelist[i]);
+        std::cout << std::endl;
     }
     free(namelist);
 
