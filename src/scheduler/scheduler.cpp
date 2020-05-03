@@ -183,12 +183,14 @@ namespace Scheduler
 
         int bestBucketID = this->analyzeFillFactorMatrix(&matrix);
 
-        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
-            Bucket* bucket = *itBucket;
-            if (bucket->GetID() == bestBucketID) {
-                this->bindBucketWidthItem(bucket, item);
-                return true;
-            }
+        if (bestBucketID == -1) {
+            return false;
+        }
+
+        Bucket* bucket = this->getBucketByID(bestBucketID);
+        if (bucket != nullptr) {
+            this->bindBucketWidthItem(bucket, item);
+            return true;
         }
 
         return false;
