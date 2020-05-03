@@ -132,7 +132,7 @@ namespace Scheduler
 
         Item* avgItem = this->getAverageItem();
 
-        std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_ITEMS_COUNT);
+        std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_RANDOM_ITEMS_COUNT);
         randomItems->push_front(item);
         randomItems->push_back(avgItem);
 
@@ -236,7 +236,7 @@ namespace Scheduler
 
         std::srand(unsigned(ms.count()));
 
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count && i < this->scheduled_items->size(); ++i) {
             int index = std::rand() % itemIds.size();
             int itemID = 0;
             int j = 0;

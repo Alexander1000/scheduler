@@ -9,6 +9,7 @@
 #include <scheduler/strategy.h>
 
 #define SCHEDULE_STATISTIC_ITEMS_COUNT 5
+#define SCHEDULE_STATISTIC_RANDOM_ITEMS_COUNT 10
 
 // itemID: fill factor
 typedef std::map<int, float> FillFactorMap;
