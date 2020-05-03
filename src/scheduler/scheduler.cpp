@@ -289,18 +289,59 @@ namespace Scheduler
     int Scheduler::analyzeFillFactorMatrix(std::map<int, FillFactorMap*>* matrix)
     {
         int bestBucketID = -1;
-        float bestFillFactor = 0.0f;
 
-        std::map<int, FillFactorMap*>::iterator itMatrix;
+        if (matrix->empty()) {
+            return bestBucketID;
+        }
+
+        std::map<int, FillFactorMap *>::iterator itMatrix;
+
+        int countFilteredBuckets = matrix->size();
+        float scoreFilter = -2.0f;
+
+        while (countFilteredBuckets > 0) {
+            countFilteredBuckets = 0;
+
+            for (itMatrix = matrix->begin(); itMatrix != matrix->end(); ++itMatrix) {
+                FillFactorMap::iterator itFillFactorMap;
+                bool fillBucket = true;
+
+                for (itFillFactorMap = itMatrix->second->begin(); itFillFactorMap != itMatrix->second->end(); ++itFillFactorMap) {
+                    if (itFillFactorMap->second < scoreFilter) {
+                        fillBucket = false;
+                        break;
+                    }
+                }
+
+                if (fillBucket) {
+                    countFilteredBuckets++;
+                }
+            }
+
+            scoreFilter += 1.0f;
+        }
+        scoreFilter -= 1.0f;
+
+        float bestFillFactor = 0.0f;
         for (itMatrix = matrix->begin(); itMatrix != matrix->end(); ++itMatrix) {
             float curFillFactor = 0.0f;
             FillFactorMap::iterator itFillFactorMap;
+            bool fillBucket = true;
+
             for (itFillFactorMap = itMatrix->second->begin(); itFillFactorMap != itMatrix->second->end(); ++itFillFactorMap) {
                 curFillFactor += itFillFactorMap->second;
+
+                if (itFillFactorMap->second < scoreFilter) {
+                    fillBucket = false;
+                    break;
+                }
             }
-            if (bestBucketID == -1 || bestFillFactor < curFillFactor) {
-                bestBucketID = itMatrix->first;
-                bestFillFactor = curFillFactor;
+
+            if (fillBucket) {
+                if (bestBucketID == -1 || bestFillFactor < curFillFactor) {
+                    bestBucketID = itMatrix->first;
+                    bestFillFactor = curFillFactor;
+                }
             }
         }
 
