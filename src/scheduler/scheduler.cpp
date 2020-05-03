@@ -181,6 +181,30 @@ namespace Scheduler
 
         // analyze fill factor matrix
 
+        int bestBucketID = -1;
+        float bestFillFactor = 0.0f;
+
+        std::map<int, FillFactorMap*>::iterator itMatrix;
+        for (itMatrix = matrix.begin(); itMatrix != matrix.end(); ++itMatrix) {
+            float curFillFactor = 0.0f;
+            FillFactorMap::iterator itFillFactorMap;
+            for (itFillFactorMap = itMatrix->second->begin(); itFillFactorMap != itMatrix->second->end(); ++itFillFactorMap) {
+                curFillFactor += itFillFactorMap->second;
+            }
+            if (bestBucketID == -1 || bestFillFactor < curFillFactor) {
+                bestBucketID = itMatrix->first;
+                bestFillFactor = curFillFactor;
+            }
+        }
+
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = *itBucket;
+            if (bucket->GetID() == bestBucketID) {
+                this->bindBucketWidthItem(bucket, item);
+                return true;
+            }
+        }
+
         return false;
     }
 
