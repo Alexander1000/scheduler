@@ -143,6 +143,19 @@ namespace Scheduler
         std::list<Bucket*>::iterator itBucket, itBucketNested;
         for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
             Bucket* bucket = *itBucket;
+
+            if (!bucket->HasCapacityForItem(item)) {
+                continue;
+            }
+
+            std::map<int, int> testResource;
+            std::map<int, int>::iterator itResource;
+            for (itResource = bucket->GetLeft()->begin(); itResource != bucket->GetLeft()->end(); ++itResource) {
+                testResource.insert(std::pair<int, int>(itResource->first, itResource->second));
+            }
+            for (itResource = item->GetResources()->begin(); itResource != item->GetResources()->end(); ++itResource) {
+                testResource.find(itResource->first)->second -= itResource->second;
+            }
             FillFactorMap* fillFactorMap = new FillFactorMap;
 
             for (itItem = randomItems->begin(); itItem != randomItems->end(); ++itItem) {
@@ -151,7 +164,11 @@ namespace Scheduler
 
                 for (itBucketNested = this->bucket_pool->begin(); itBucketNested != this->bucket_pool->end(); ++itBucketNested) {
                     Bucket* bucketNested = *itBucketNested;
-                    fillFactorItem += this->getFillFactor(curItem, bucketNested->GetLeft());
+                    if (bucketNested->GetID() != bucket->GetID()) {
+                        fillFactorItem += this->getFillFactor(curItem, bucketNested->GetLeft());
+                    } else {
+                        fillFactorItem += this->getFillFactor(curItem, &testResource);
+                    }
                 }
 
                 fillFactorMap->insert(std::pair<int, float>(curItem->GetId(), fillFactorItem));
