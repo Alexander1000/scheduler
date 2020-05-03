@@ -132,7 +132,7 @@ namespace Scheduler
 
         Item* avgItem = this->getAverageItem();
 
-        std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_ITEMS_COUNT);
+        std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_RANDOM_ITEMS_COUNT);
         randomItems->push_front(item);
         randomItems->push_back(avgItem);
 
@@ -183,12 +183,14 @@ namespace Scheduler
 
         int bestBucketID = this->analyzeFillFactorMatrix(&matrix);
 
-        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
-            Bucket* bucket = *itBucket;
-            if (bucket->GetID() == bestBucketID) {
-                this->bindBucketWidthItem(bucket, item);
-                return true;
-            }
+        if (bestBucketID == -1) {
+            return false;
+        }
+
+        Bucket* bucket = this->getBucketByID(bestBucketID);
+        if (bucket != nullptr) {
+            this->bindBucketWidthItem(bucket, item);
+            return true;
         }
 
         return false;
@@ -236,7 +238,7 @@ namespace Scheduler
 
         std::srand(unsigned(ms.count()));
 
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count && i < this->scheduled_items->size(); ++i) {
             int index = std::rand() % itemIds.size();
             int itemID = 0;
             int j = 0;
@@ -289,21 +291,78 @@ namespace Scheduler
     int Scheduler::analyzeFillFactorMatrix(std::map<int, FillFactorMap*>* matrix)
     {
         int bestBucketID = -1;
+
+        if (matrix->empty()) {
+            return bestBucketID;
+        }
+
+        std::map<int, FillFactorMap *>::iterator itMatrix;
+
+        int countFilteredBuckets = matrix->size();
+        float scoreFilter = -2.0f;
+
+        while (countFilteredBuckets > 0) {
+            countFilteredBuckets = 0;
+
+            for (itMatrix = matrix->begin(); itMatrix != matrix->end(); ++itMatrix) {
+                FillFactorMap::iterator itFillFactorMap;
+                bool fillBucket = true;
+
+                for (itFillFactorMap = itMatrix->second->begin(); itFillFactorMap != itMatrix->second->end(); ++itFillFactorMap) {
+                    if (itFillFactorMap->second < scoreFilter) {
+                        fillBucket = false;
+                        break;
+                    }
+                }
+
+                if (fillBucket) {
+                    countFilteredBuckets++;
+                }
+            }
+
+            if (countFilteredBuckets > 0) {
+                scoreFilter += 1.0f;
+            }
+        }
+
+        scoreFilter -= 1.0f;
+
         float bestFillFactor = 0.0f;
 
-        std::map<int, FillFactorMap*>::iterator itMatrix;
         for (itMatrix = matrix->begin(); itMatrix != matrix->end(); ++itMatrix) {
             float curFillFactor = 0.0f;
             FillFactorMap::iterator itFillFactorMap;
+            bool fillBucket = true;
+
             for (itFillFactorMap = itMatrix->second->begin(); itFillFactorMap != itMatrix->second->end(); ++itFillFactorMap) {
+                if (itFillFactorMap->second < scoreFilter) {
+                    fillBucket = false;
+                    break;
+                }
+
                 curFillFactor += itFillFactorMap->second;
             }
-            if (bestBucketID == -1 || bestFillFactor < curFillFactor) {
-                bestBucketID = itMatrix->first;
-                bestFillFactor = curFillFactor;
+
+            if (fillBucket) {
+                if (bestBucketID == -1 || bestFillFactor < curFillFactor) {
+                    bestBucketID = itMatrix->first;
+                    bestFillFactor = curFillFactor;
+                }
             }
         }
 
         return bestBucketID;
+    }
+
+    Bucket* Scheduler::getBucketByID(int bucketID)
+    {
+        std::list<Bucket*>::iterator itBucket;
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = *itBucket;
+            if (bucket->GetID() == bucketID) {
+                return bucket;
+            }
+        }
+        return nullptr;
     }
 }
