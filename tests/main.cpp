@@ -471,9 +471,6 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         Scheduler::Bucket* bucket = (*itBucketPool);
         int bucketID = bucket->GetID();
 
-        float koef = 0.0f;
-        int countResources = 0;
-
         IOBuffer::IOMemoryBuffer ioMemoryBufferCapacity, ioMemoryBufferUsage, ioMemoryBufferLeft, ioMemoryBufferPercent;
 
         gridBucketResourceDistribution.Set(bucketID, 0, new ShellGrid::CellNumeric(bucketID));
@@ -520,11 +517,9 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
             memset(percentResources, 0, sizeof(char));
             if (capacity > 0) {
-                countResources++;
                 float percent = ((float) usage / (float) capacity) * 100;
                 sprintf(percentResources, "%0.2f", percent);
                 ioMemoryBufferPercent.write(percentResources, strlen(percentResources));
-                koef += (float) usage / (float) capacity;
             } else {
                 ioMemoryBufferPercent.write((char*) "NULL", 4);
             }
@@ -567,10 +562,9 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         ioMemoryBufferPercent.read(percentResources, 100);
         gridBucketResourceDistribution.Set(bucketID, 5, new ShellGrid::CellString(percentResources));
 
-        koef = (koef / (float) countResources) * 100;
         char* koefResources = new char[100];
         memset(koefResources, 0, sizeof(char) * 100);
-        sprintf(koefResources, "%0.02f", koef);
+        sprintf(koefResources, "%0.02f", bucket->GetFillRate() *  100);
         gridBucketResourceDistribution.Set(bucketID, 6, new ShellGrid::CellString(koefResources));
     }
 
