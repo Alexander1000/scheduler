@@ -9,6 +9,7 @@ namespace Scheduler
         this->resource_pool = new std::list<Resource*>;
         this->bucket_pool = new std::list<Bucket*>;
         this->pending_items = new std::list<Item*>;
+        this->scheduled_items = new std::list<Item*>;
         this->strategy = StrategyType::SimpleType;
     }
 
@@ -27,8 +28,7 @@ namespace Scheduler
             for (it = this->bucket_pool->begin(); it != this->bucket_pool->end(); ++it) {
                 Bucket *bucket = *it;
                 if (bucket->HasCapacityForItem(item)) {
-                    bucket->AddItem(item);
-                    item->SetBucket(bucket->GetID());
+                    this->bindBucketWidthItem(bucket, item);
                     scheduled = true;
                     break;
                 }
@@ -58,8 +58,7 @@ namespace Scheduler
                     for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
                         Bucket* bucket = (*itBucket);
                         if (bucket->GetID() == bucketID) {
-                            bucket->AddItem(item);
-                            item->SetBucket(bucket->GetID());
+                            this->bindBucketWidthItem(bucket, item);
                             scheduled = true;
                             break;
                         }
@@ -113,5 +112,12 @@ namespace Scheduler
     std::list<Bucket*>* Scheduler::GetBucketPool()
     {
         return this->bucket_pool;
+    }
+
+    void Scheduler::bindBucketWidthItem(Bucket* bucket, Item* item)
+    {
+        bucket->AddItem(item);
+        item->SetBucket(bucket->GetID());
+        this->scheduled_items->push_back(item);
     }
 }

@@ -36,7 +36,11 @@ namespace Scheduler {
         // list items for schedule
         std::list<Item*>* pending_items;
 
+        std::list<Item*>* scheduled_items;
+
         StrategyType strategy;
+
+        void bindBucketWidthItem(Bucket* bucket, Item* item);
     };
 }
 
