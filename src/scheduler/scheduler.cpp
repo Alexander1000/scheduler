@@ -138,9 +138,26 @@ namespace Scheduler
 
         std::map<int, FillFactorMap*> matrix;
 
-        std::list<Bucket*>::iterator itBucket;
+        std::list<Item*>::iterator itItem;
+
+        std::list<Bucket*>::iterator itBucket, itBucketNested;
         for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
             Bucket* bucket = *itBucket;
+            FillFactorMap* fillFactorMap = new FillFactorMap;
+
+            for (itItem = randomItems->begin(); itItem != randomItems->end(); ++itItem) {
+                Item* curItem = *itItem;
+                float fillFactorItem = 0.0f;
+
+                for (itBucketNested = this->bucket_pool->begin(); itBucketNested != this->bucket_pool->end(); ++itBucketNested) {
+                    Bucket* bucketNested = *itBucketNested;
+                    fillFactorItem += this->getFillFactor(curItem, bucketNested->GetLeft());
+                }
+
+                fillFactorMap->insert(std::pair<int, float>(curItem->GetId(), fillFactorItem));
+            }
+
+            matrix.insert(std::pair<int, FillFactorMap*>(bucket->GetID(), fillFactorMap));
         }
 
         return false;
