@@ -56,6 +56,8 @@ namespace Scheduler {
         std::list<Item*>* getRandomListItems(int count);
 
         static float getFillFactor(Item* item, std::map<int, int>* leftResources);
+
+        static int analyzeFillFactorMatrix(std::map<int, FillFactorMap*>* matrix);
     };
 }
 
