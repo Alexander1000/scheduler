@@ -8,6 +8,8 @@
 #include <scheduler/item.h>
 #include <scheduler/strategy.h>
 
+#define SCHEDULE_STATISTIC_ITEMS_COUNT 5
+
 namespace Scheduler {
     // scheduler
     class Scheduler {
@@ -47,6 +49,8 @@ namespace Scheduler {
         Item* getAverageItem();
 
         void bindBucketWidthItem(Bucket* bucket, Item* item);
+
+        std::list<Item*>* getRandomListItems(int count);
     };
 }
 

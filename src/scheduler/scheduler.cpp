@@ -1,6 +1,10 @@
 #include <scheduler.h>
 #include <list>
 #include <map>
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <chrono>
 
 namespace Scheduler
 {
@@ -122,11 +126,13 @@ namespace Scheduler
 
     bool Scheduler::scheduleStatistic(Item* item)
     {
-        if (this->scheduled_items->size() < 5) {
+        if (this->scheduled_items->size() < SCHEDULE_STATISTIC_ITEMS_COUNT) {
             return this->scheduleLeastLoad(item);
         }
 
         Item* avgItem = this->getAverageItem();
+
+        std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_ITEMS_COUNT);
 
         return false;
     }
@@ -154,5 +160,26 @@ namespace Scheduler
         }
 
         return new Item(0, itemResources);
+    }
+
+    std::list<Item*>* Scheduler::getRandomListItems(int count)
+    {
+        std::list<Item*>* items = new std::list<Item*>;
+        std::list<int> itemIds;
+        std::list<Item*>::iterator itItem;
+        for (itItem = this->scheduled_items->begin(); itItem != this->scheduled_items->end(); ++itItem) {
+            itemIds.push_back((*itItem)->GetId());
+        }
+
+        std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
+
+        std::srand(unsigned(ms.count()));
+
+        for (int i = 0; i < count; ++i) {
+            int index = std::rand() % itemIds.size();
+        }
+        return items;
     }
 }
