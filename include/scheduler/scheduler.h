@@ -40,6 +40,8 @@ namespace Scheduler {
 
         StrategyType strategy;
 
+        bool scheduleLeastLoad(Item* item);
+
         void bindBucketWidthItem(Bucket* bucket, Item* item);
     };
 }

@@ -35,36 +35,7 @@ namespace Scheduler
             }
         } else if (this->strategy == StrategyType::LeastLoadedType) {
             // search least loaded bucket
-            std::map<int, float> bucketScore;
-            std::list<Bucket*>::iterator itBucket;
-            for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
-                Bucket* bucket = (*itBucket);
-                if (bucket->HasCapacityForItem(item)) {
-                    bucketScore.insert(std::pair<int, float>(bucket->GetID(), bucket->GetFillRate()));
-                }
-            }
-            if (bucketScore.size() > 0) {
-                int bucketID = 0;
-                float bestScore = 2.0f;
-
-                std::map<int, float>::iterator itBucketScore;
-                for (itBucketScore = bucketScore.begin(); itBucketScore != bucketScore.end(); ++itBucketScore) {
-                    if (itBucketScore->second < bestScore) {
-                        bucketID = itBucketScore->first;
-                        bestScore = itBucketScore->second;
-                    }
-                }
-                if (bucketID > 0) {
-                    for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
-                        Bucket* bucket = (*itBucket);
-                        if (bucket->GetID() == bucketID) {
-                            this->bindBucketWidthItem(bucket, item);
-                            scheduled = true;
-                            break;
-                        }
-                    }
-                }
-            }
+            scheduled = this->scheduleLeastLoad(item);
         } else if (this->strategy == StrategyType::StatisticType) {
             // statistic
         } else if (this->strategy == StrategyType::DeferredType) {
@@ -119,5 +90,32 @@ namespace Scheduler
         bucket->AddItem(item);
         item->SetBucket(bucket->GetID());
         this->scheduled_items->push_back(item);
+    }
+
+    bool Scheduler::scheduleLeastLoad(Item *item)
+    {
+        float bestScore = 2.0f;
+        Bucket* bestBucket = nullptr;
+
+        std::list<Bucket*>::iterator itBucket;
+
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = (*itBucket);
+            if (bucket->HasCapacityForItem(item)) {
+                float score = bucket->GetFillRate();
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestBucket = bucket;
+                    continue;
+                }
+            }
+        }
+
+        if (bestBucket == nullptr) {
+            return false;
+        }
+
+        this->bindBucketWidthItem(bestBucket, item);
+        return true;
     }
 }
