@@ -318,8 +318,11 @@ namespace Scheduler
                 }
             }
 
-            scoreFilter += 1.0f;
+            if (countFilteredBuckets > 0) {
+                scoreFilter += 1.0f;
+            }
         }
+
         scoreFilter -= 1.0f;
 
         float bestFillFactor = 0.0f;
