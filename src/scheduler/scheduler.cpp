@@ -133,8 +133,14 @@ namespace Scheduler
         Item* avgItem = this->getAverageItem();
 
         std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_ITEMS_COUNT);
+        randomItems->push_back(avgItem);
 
         std::map<int, FillFactorMap*> matrix;
+
+        std::list<Bucket*>::iterator itBucket;
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = *itBucket;
+        }
 
         return false;
     }
