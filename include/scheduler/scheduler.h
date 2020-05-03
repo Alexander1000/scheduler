@@ -10,6 +10,9 @@
 
 #define SCHEDULE_STATISTIC_ITEMS_COUNT 5
 
+// itemID: fill factor
+typedef std::map<int, float> FillFactorMap;
+
 namespace Scheduler {
     // scheduler
     class Scheduler {

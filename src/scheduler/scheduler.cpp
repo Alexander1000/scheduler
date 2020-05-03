@@ -134,6 +134,8 @@ namespace Scheduler
 
         std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_ITEMS_COUNT);
 
+        std::map<int, FillFactorMap*> matrix;
+
         return false;
     }
 
@@ -212,7 +214,6 @@ namespace Scheduler
     {
         float fillFactor = -1.0f;
 
-        std::map<int, float> fillCounter;
         std::map<int, int>::iterator itRes;
         float currentFillFactor = -1.0f;
 
