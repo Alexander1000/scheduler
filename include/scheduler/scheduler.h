@@ -51,6 +51,8 @@ namespace Scheduler {
         void bindBucketWidthItem(Bucket* bucket, Item* item);
 
         std::list<Item*>* getRandomListItems(int count);
+
+        static float getFillFactor(Item* item, std::map<int, int>* leftResources);
     };
 }
 

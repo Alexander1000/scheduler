@@ -207,4 +207,26 @@ namespace Scheduler
 
         return items;
     }
+
+    float Scheduler::getFillFactor(Item* item, std::map<int, int>* leftResources)
+    {
+        float fillFactor = -1.0f;
+
+        std::map<int, float> fillCounter;
+        std::map<int, int>::iterator itRes;
+        float currentFillFactor = -1.0f;
+
+        for (itRes = item->GetResources()->begin(); itRes != item->GetResources()->end(); ++itRes) {
+            currentFillFactor = 0.0f;
+            if (leftResources->find(itRes->first) != leftResources->end()) {
+                currentFillFactor = (float) leftResources->find(itRes->first)->second / (float) itRes->second;
+            }
+
+            if (fillFactor < 0.0f || currentFillFactor < fillFactor) {
+                fillFactor = currentFillFactor;
+            }
+        }
+
+        return fillFactor;
+    }
 }
