@@ -38,6 +38,7 @@ namespace Scheduler
             scheduled = this->scheduleLeastLoad(item);
         } else if (this->strategy == StrategyType::StatisticType) {
             // statistic
+            scheduled = this->scheduleStatistic(item);
         } else if (this->strategy == StrategyType::DeferredType) {
             // deferred
         }
@@ -117,5 +118,14 @@ namespace Scheduler
 
         this->bindBucketWidthItem(bestBucket, item);
         return true;
+    }
+
+    bool Scheduler::scheduleStatistic(Item* item)
+    {
+        if (this->scheduled_items->size() < 5) {
+            return this->scheduleLeastLoad(item);
+        }
+
+        return false;
     }
 }

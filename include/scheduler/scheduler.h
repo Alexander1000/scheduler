@@ -42,6 +42,8 @@ namespace Scheduler {
 
         bool scheduleLeastLoad(Item* item);
 
+        bool scheduleStatistic(Item* item);
+
         void bindBucketWidthItem(Bucket* bucket, Item* item);
     };
 }
