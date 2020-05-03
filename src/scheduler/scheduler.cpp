@@ -126,6 +126,33 @@ namespace Scheduler
             return this->scheduleLeastLoad(item);
         }
 
+        Item* avgItem = this->getAverageItem();
+
         return false;
+    }
+
+    Item* Scheduler::getAverageItem()
+    {
+        std::map<int, int>* itemResources;
+        itemResources = new std::map<int, int>;
+        std::list<Item*>::iterator itItem;
+        std::map<int, int>::iterator itResources;
+
+        for (itItem = this->scheduled_items->begin(); itItem != this->scheduled_items->end(); ++itItem) {
+            Item* item = (*itItem);
+            for (itResources = item->GetResources()->begin(); itResources != item->GetResources()->end(); ++itResources) {
+                if (itemResources->find(itResources->first) != itemResources->end()) {
+                    itemResources->find(itResources->first)->second += itResources->second;
+                } else {
+                    itemResources->insert(std::pair<int, int>(itResources->first, itResources->second));
+                }
+            }
+        }
+
+        for (itResources = itemResources->begin(); itResources != itemResources->end(); ++itResources) {
+            itResources->second = itResources->second / this->scheduled_items->size();
+        }
+
+        return new Item(0, itemResources);
     }
 }

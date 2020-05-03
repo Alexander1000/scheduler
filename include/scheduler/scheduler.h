@@ -44,6 +44,8 @@ namespace Scheduler {
 
         bool scheduleStatistic(Item* item);
 
+        Item* getAverageItem();
+
         void bindBucketWidthItem(Bucket* bucket, Item* item);
     };
 }
