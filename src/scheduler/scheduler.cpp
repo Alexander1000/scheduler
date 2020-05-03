@@ -286,7 +286,7 @@ namespace Scheduler
         return fillFactor;
     }
 
-    int Scheduler::analyzeFillFactorMatrix(std::map<int, FillFactorMap *> *matrix)
+    int Scheduler::analyzeFillFactorMatrix(std::map<int, FillFactorMap*>* matrix)
     {
         int bestBucketID = -1;
         float bestFillFactor = 0.0f;
