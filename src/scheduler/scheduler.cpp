@@ -326,18 +326,19 @@ namespace Scheduler
         scoreFilter -= 1.0f;
 
         float bestFillFactor = 0.0f;
+
         for (itMatrix = matrix->begin(); itMatrix != matrix->end(); ++itMatrix) {
             float curFillFactor = 0.0f;
             FillFactorMap::iterator itFillFactorMap;
             bool fillBucket = true;
 
             for (itFillFactorMap = itMatrix->second->begin(); itFillFactorMap != itMatrix->second->end(); ++itFillFactorMap) {
-                curFillFactor += itFillFactorMap->second;
-
                 if (itFillFactorMap->second < scoreFilter) {
                     fillBucket = false;
                     break;
                 }
+
+                curFillFactor += itFillFactorMap->second;
             }
 
             if (fillBucket) {
@@ -349,5 +350,17 @@ namespace Scheduler
         }
 
         return bestBucketID;
+    }
+
+    Bucket* Scheduler::getBucketByID(int bucketID)
+    {
+        std::list<Bucket*>::iterator itBucket;
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = *itBucket;
+            if (bucket->GetID() == bucketID) {
+                return bucket;
+            }
+        }
+        return nullptr;
     }
 }
