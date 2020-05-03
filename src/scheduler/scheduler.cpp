@@ -167,6 +167,8 @@ namespace Scheduler
         std::list<Item*>* items = new std::list<Item*>;
         std::list<int> itemIds;
         std::list<Item*>::iterator itItem;
+        std::list<int>::iterator itItemId;
+
         for (itItem = this->scheduled_items->begin(); itItem != this->scheduled_items->end(); ++itItem) {
             itemIds.push_back((*itItem)->GetId());
         }
@@ -179,7 +181,30 @@ namespace Scheduler
 
         for (int i = 0; i < count; ++i) {
             int index = std::rand() % itemIds.size();
+            int itemID = 0;
+            int j = 0;
+
+            for (itItemId = itemIds.begin(); itItemId != itemIds.end(); ++itItemId) {
+                if (j == index) {
+                    itemID = *itItemId;
+                    itemIds.remove(itemID);
+                    break;
+                }
+                j++;
+            }
+
+            if (itemID == 0) {
+                continue;
+            }
+
+            for (itItem = this->scheduled_items->begin(); itItem != this->scheduled_items->end(); ++itItem) {
+                if ((*itItem)->GetId() == itemID) {
+                    items->push_back(*itItem);
+                    break;
+                }
+            }
         }
+
         return items;
     }
 }
