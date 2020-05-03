@@ -136,6 +136,8 @@ namespace Scheduler
         randomItems->push_front(item);
         randomItems->push_back(avgItem);
 
+        // build matrix
+
         std::map<int, FillFactorMap*> matrix;
 
         std::list<Item*>::iterator itItem;
@@ -176,6 +178,8 @@ namespace Scheduler
 
             matrix.insert(std::pair<int, FillFactorMap*>(bucket->GetID(), fillFactorMap));
         }
+
+        // analyze fill factor matrix
 
         return false;
     }
