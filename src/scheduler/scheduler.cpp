@@ -133,6 +133,7 @@ namespace Scheduler
         Item* avgItem = this->getAverageItem();
 
         std::list<Item*>* randomItems = this->getRandomListItems(SCHEDULE_STATISTIC_ITEMS_COUNT);
+        randomItems->push_front(item);
         randomItems->push_back(avgItem);
 
         std::map<int, FillFactorMap*> matrix;
