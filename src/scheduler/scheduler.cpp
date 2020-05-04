@@ -337,22 +337,23 @@ namespace Scheduler
             return false;
         }
 
-        // build matrix
+        std::list<Item*>::iterator itItem;
+        for (itItem = this->pending_items->begin(); itItem != this->pending_items->end(); ++itItem) {
+            // build matrix
+            std::map<int, FillFactorMap*>* matrix = this->buildFillFactorMatrix(*itItem, this->pending_items);
 
-        std::map<int, FillFactorMap*>* matrix = this->buildFillFactorMatrix(item, this->pending_items);
+            // analyze fill factor matrix
+            int bestBucketID = this->analyzeFillFactorMatrix(matrix);
 
-        // analyze fill factor matrix
+            if (bestBucketID == -1) {
+                continue;
+            }
 
-        int bestBucketID = this->analyzeFillFactorMatrix(matrix);
-
-        if (bestBucketID == -1) {
-            return false;
-        }
-
-        Bucket* bucket = this->getBucketByID(bestBucketID);
-        if (bucket != nullptr) {
-            this->bindBucketWidthItem(bucket, item);
-            return true;
+            Bucket* bucket = this->getBucketByID(bestBucketID);
+            if (bucket != nullptr) {
+                this->bindBucketWidthItem(bucket, *itItem);
+                this->pending_items->remove(*itItem);
+            }
         }
 
         return false;
