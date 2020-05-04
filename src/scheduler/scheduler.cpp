@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <chrono>
+#include <math.h>
 
 namespace Scheduler
 {
@@ -405,9 +406,9 @@ namespace Scheduler
                 for (itBucketNested = this->bucket_pool->begin(); itBucketNested != this->bucket_pool->end(); ++itBucketNested) {
                     Bucket* bucketNested = *itBucketNested;
                     if (bucketNested->GetID() != bucket->GetID()) {
-                        fillFactorItem += this->getFillFactor(curItem, bucketNested->GetLeft());
+                        fillFactorItem += ceil(this->getFillFactor(curItem, bucketNested->GetLeft()));
                     } else {
-                        fillFactorItem += this->getFillFactor(curItem, &testResource);
+                        fillFactorItem += ceil(this->getFillFactor(curItem, &testResource));
                     }
                 }
 

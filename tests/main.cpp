@@ -360,58 +360,62 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
     DistributionMap* expectedDistribution;
     expectedDistribution = new DistributionMap;
 
+    bool checkDistribution = true;
+
     itObject = rObj->find("distribution");
     if (itObject == rObj->end()) {
-        throw new AssertPropertyNotExists;
+        checkDistribution = false;
     }
 
-    if (itObject->second->getType() != YamlParser::ElementType::ListType) {
-        throw new AssertInvalidYamlElementType;
-    }
-
-    YamlArray* aDistribution = (YamlArray*) itObject->second->getData();
-    YamlArray::iterator itDistribution;
-    for (itDistribution = aDistribution->begin(); itDistribution != aDistribution->end(); ++itDistribution) {
-        if ((*itDistribution)->getType() != YamlParser::ElementType::ObjectType) {
+    if (checkDistribution) {
+        if (itObject->second->getType() != YamlParser::ElementType::ListType) {
             throw new AssertInvalidYamlElementType;
         }
-        YamlObject* elDistribution = (YamlObject*) (*itDistribution)->getData();
 
-        YamlObject::iterator itElementDistribution;
-
-        itElementDistribution = elDistribution->find("id");
-        if (itElementDistribution == elDistribution->end()) {
-            throw new AssertPropertyNotExists;
-        }
-        if (itElementDistribution->second->getType() != YamlParser::ElementType::PlainTextType) {
-            throw new AssertInvalidYamlElementType;
-        }
-        std::string* sIdBucket = (std::string*) itElementDistribution->second->getData();
-        int idBucket = atoi(sIdBucket->c_str()); // bucket id
-
-        itElementDistribution = elDistribution->find("ids");
-        if (itElementDistribution == elDistribution->end()) {
-            throw new AssertPropertyNotExists;
-        }
-        if (itElementDistribution->second->getType() != YamlParser::ElementType::ListType) {
-            throw new AssertInvalidYamlElementType;
-        }
-        YamlArray* aListIds = (YamlArray*) itElementDistribution->second->getData();
-        YamlArray::iterator itListIds;
-        int* itemIds = new int[aListIds->size() + 1];
-        memset(itemIds, 0, sizeof(int) * (aListIds->size() + 1));
-        int j = 0;
-        for (itListIds = aListIds->begin(); itListIds != aListIds->end(); ++itListIds) {
-            if ((*itListIds)->getType() != YamlParser::ElementType::PlainTextType) {
+        YamlArray *aDistribution = (YamlArray *) itObject->second->getData();
+        YamlArray::iterator itDistribution;
+        for (itDistribution = aDistribution->begin(); itDistribution != aDistribution->end(); ++itDistribution) {
+            if ((*itDistribution)->getType() != YamlParser::ElementType::ObjectType) {
                 throw new AssertInvalidYamlElementType;
             }
-            std::string* sItemId = (std::string*) (*itListIds)->getData();
-            int itemId = atoi(sItemId->c_str()); // item id
-            itemIds[j] = itemId;
-            j++;
-        }
+            YamlObject *elDistribution = (YamlObject *) (*itDistribution)->getData();
 
-        expectedDistribution->insert(std::pair<int, int*>(idBucket, itemIds));
+            YamlObject::iterator itElementDistribution;
+
+            itElementDistribution = elDistribution->find("id");
+            if (itElementDistribution == elDistribution->end()) {
+                throw new AssertPropertyNotExists;
+            }
+            if (itElementDistribution->second->getType() != YamlParser::ElementType::PlainTextType) {
+                throw new AssertInvalidYamlElementType;
+            }
+            std::string *sIdBucket = (std::string *) itElementDistribution->second->getData();
+            int idBucket = atoi(sIdBucket->c_str()); // bucket id
+
+            itElementDistribution = elDistribution->find("ids");
+            if (itElementDistribution == elDistribution->end()) {
+                throw new AssertPropertyNotExists;
+            }
+            if (itElementDistribution->second->getType() != YamlParser::ElementType::ListType) {
+                throw new AssertInvalidYamlElementType;
+            }
+            YamlArray *aListIds = (YamlArray *) itElementDistribution->second->getData();
+            YamlArray::iterator itListIds;
+            int *itemIds = new int[aListIds->size() + 1];
+            memset(itemIds, 0, sizeof(int) * (aListIds->size() + 1));
+            int j = 0;
+            for (itListIds = aListIds->begin(); itListIds != aListIds->end(); ++itListIds) {
+                if ((*itListIds)->getType() != YamlParser::ElementType::PlainTextType) {
+                    throw new AssertInvalidYamlElementType;
+                }
+                std::string *sItemId = (std::string *) (*itListIds)->getData();
+                int itemId = atoi(sItemId->c_str()); // item id
+                itemIds[j] = itemId;
+                j++;
+            }
+
+            expectedDistribution->insert(std::pair<int, int *>(idBucket, itemIds));
+        }
     }
 
     // Print info
@@ -640,10 +644,12 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
 
     gridBucketResourceDistribution.Output();
 
-    // distribution items in buckets
-    DistributionMap* distribution = s.__GetDistributionItems();
+    if (checkDistribution) {
+        // distribution items in buckets
+        DistributionMap *distribution = s.__GetDistributionItems();
 
-    assertDistribution(t, expectedDistribution, distribution);
+        assertDistribution(t, expectedDistribution, distribution);
+    }
 
     t->finish();
     return t;
