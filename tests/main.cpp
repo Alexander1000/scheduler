@@ -354,6 +354,8 @@ CppUnitTest::TestCase* testSchedule_YamlTestCase_Positive(std::string fileName)
         }
     }
 
+    s.Schedule();
+
     // make expected distribution
     DistributionMap* expectedDistribution;
     expectedDistribution = new DistributionMap;

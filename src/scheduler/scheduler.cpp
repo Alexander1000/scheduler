@@ -22,6 +22,13 @@ namespace Scheduler
         this->bucket_pool->push_back(bucket);
     }
 
+    void Scheduler::Schedule()
+    {
+        if (this->strategy == StrategyType::DeferredType) {
+            this->scheduleDeferred(nullptr);
+        }
+    }
+
     void Scheduler::ScheduleItem(Item* item)
     {
         bool scheduled = false;
@@ -331,9 +338,11 @@ namespace Scheduler
 
     bool Scheduler::scheduleDeferred(Item* item)
     {
-        this->pending_items->push_back(item);
+        if (item != nullptr) {
+            this->pending_items->push_back(item);
+        }
 
-        if (this->pending_items->size() < MAX_PENDING_ITEMS_FOR_SCHEDULE) {
+        if (this->pending_items->size() < MAX_PENDING_ITEMS_FOR_SCHEDULE || item == nullptr) {
             return false;
         }
 

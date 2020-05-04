@@ -23,6 +23,8 @@ namespace Scheduler {
         // add bucket to pool
         void AddBucket(Bucket* bucket);
 
+        void Schedule();
+
         // schedule item
         void ScheduleItem(Item* item);
 
