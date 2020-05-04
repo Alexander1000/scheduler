@@ -64,6 +64,8 @@ namespace Scheduler {
         static int analyzeFillFactorMatrix(std::map<int, FillFactorMap*>* matrix);
 
         Bucket* getBucketByID(int bucketID);
+
+        std::map<int, FillFactorMap*>* buildFillFactorMatrix(Item* item, std::list<Item*>* items);
     };
 }
 

@@ -45,7 +45,8 @@ namespace Scheduler
             scheduled = this->scheduleStatistic(item);
         } else if (this->strategy == StrategyType::DeferredType) {
             // deferred
-            scheduled = this->scheduleDeferred(item);
+            this->scheduleDeferred(item);
+            return;
         }
 
         if (!scheduled) {
@@ -369,10 +370,116 @@ namespace Scheduler
 
     bool Scheduler::scheduleDeferred(Item* item)
     {
+        this->pending_items->push_back(item);
+
         if (this->pending_items->size() < MAX_PENDING_ITEMS_FOR_SCHEDULE) {
             return false;
         }
 
+        // build matrix
+
+        std::map<int, FillFactorMap*> matrix;
+
+        std::list<Item*>::iterator itItem;
+
+        std::list<Bucket*>::iterator itBucket, itBucketNested;
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = *itBucket;
+
+            if (!bucket->HasCapacityForItem(item)) {
+                continue;
+            }
+
+            std::map<int, int> testResource;
+            std::map<int, int>::iterator itResource;
+            for (itResource = bucket->GetLeft()->begin(); itResource != bucket->GetLeft()->end(); ++itResource) {
+                testResource.insert(std::pair<int, int>(itResource->first, itResource->second));
+            }
+            for (itResource = item->GetResources()->begin(); itResource != item->GetResources()->end(); ++itResource) {
+                testResource.find(itResource->first)->second -= itResource->second;
+            }
+            FillFactorMap* fillFactorMap = new FillFactorMap;
+
+            for (itItem = this->pending_items->begin(); itItem != this->pending_items->end(); ++itItem) {
+                Item* curItem = *itItem;
+                float fillFactorItem = 0.0f;
+
+                for (itBucketNested = this->bucket_pool->begin(); itBucketNested != this->bucket_pool->end(); ++itBucketNested) {
+                    Bucket* bucketNested = *itBucketNested;
+                    if (bucketNested->GetID() != bucket->GetID()) {
+                        fillFactorItem += this->getFillFactor(curItem, bucketNested->GetLeft());
+                    } else {
+                        fillFactorItem += this->getFillFactor(curItem, &testResource);
+                    }
+                }
+
+                fillFactorMap->insert(std::pair<int, float>(curItem->GetId(), fillFactorItem));
+            }
+
+            matrix.insert(std::pair<int, FillFactorMap*>(bucket->GetID(), fillFactorMap));
+        }
+
+        // analyze fill factor matrix
+
+        int bestBucketID = this->analyzeFillFactorMatrix(&matrix);
+
+        if (bestBucketID == -1) {
+            return false;
+        }
+
+        Bucket* bucket = this->getBucketByID(bestBucketID);
+        if (bucket != nullptr) {
+            this->bindBucketWidthItem(bucket, item);
+            return true;
+        }
+
         return false;
+    }
+
+    std::map<int, FillFactorMap*>* Scheduler::buildFillFactorMatrix(Item* item, std::list<Item*>* items)
+    {
+        // build matrix
+        auto* matrix = new std::map<int, FillFactorMap*>;
+
+        std::list<Item*>::iterator itItem;
+
+        std::list<Bucket*>::iterator itBucket, itBucketNested;
+        for (itBucket = this->bucket_pool->begin(); itBucket != this->bucket_pool->end(); ++itBucket) {
+            Bucket* bucket = *itBucket;
+
+            if (!bucket->HasCapacityForItem(item)) {
+                continue;
+            }
+
+            std::map<int, int> testResource;
+            std::map<int, int>::iterator itResource;
+            for (itResource = bucket->GetLeft()->begin(); itResource != bucket->GetLeft()->end(); ++itResource) {
+                testResource.insert(std::pair<int, int>(itResource->first, itResource->second));
+            }
+            for (itResource = item->GetResources()->begin(); itResource != item->GetResources()->end(); ++itResource) {
+                testResource.find(itResource->first)->second -= itResource->second;
+            }
+            auto* fillFactorMap = new FillFactorMap;
+
+            for (itItem = items->begin(); itItem != items->end(); ++itItem) {
+                Item* curItem = *itItem;
+                float fillFactorItem = 0.0f;
+
+                for (itBucketNested = this->bucket_pool->begin(); itBucketNested != this->bucket_pool->end(); ++itBucketNested) {
+                    Bucket* bucketNested = *itBucketNested;
+                    if (bucketNested->GetID() != bucket->GetID()) {
+                        fillFactorItem += this->getFillFactor(curItem, bucketNested->GetLeft());
+                    } else {
+                        fillFactorItem += this->getFillFactor(curItem, &testResource);
+                    }
+                }
+
+                fillFactorMap->insert(std::pair<int, float>(curItem->GetId(), fillFactorItem));
+            }
+
+            matrix->insert(std::pair<int, FillFactorMap*>(bucket->GetID(), fillFactorMap));
+        }
+
+        return matrix;
     }
 }
