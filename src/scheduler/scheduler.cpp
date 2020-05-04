@@ -45,6 +45,7 @@ namespace Scheduler
             scheduled = this->scheduleStatistic(item);
         } else if (this->strategy == StrategyType::DeferredType) {
             // deferred
+            scheduled = this->scheduleDeferred(item);
         }
 
         if (!scheduled) {
@@ -364,5 +365,14 @@ namespace Scheduler
             }
         }
         return nullptr;
+    }
+
+    bool Scheduler::scheduleDeferred(Item* item)
+    {
+        if (this->pending_items->size() < MAX_PENDING_ITEMS_FOR_SCHEDULE) {
+            return false;
+        }
+
+        return false;
     }
 }

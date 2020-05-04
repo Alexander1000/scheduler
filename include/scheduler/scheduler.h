@@ -10,6 +10,7 @@
 
 #define SCHEDULE_STATISTIC_ITEMS_COUNT 5
 #define SCHEDULE_STATISTIC_RANDOM_ITEMS_COUNT 15
+#define MAX_PENDING_ITEMS_FOR_SCHEDULE 5
 
 // itemID: fill factor
 typedef std::map<int, float> FillFactorMap;
@@ -49,6 +50,8 @@ namespace Scheduler {
         bool scheduleLeastLoad(Item* item);
 
         bool scheduleStatistic(Item* item);
+
+        bool scheduleDeferred(Item* item);
 
         Item* getAverageItem();
 
