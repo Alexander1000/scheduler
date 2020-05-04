@@ -342,7 +342,7 @@ namespace Scheduler
             this->pending_items->push_back(item);
         }
 
-        if (this->pending_items->size() < MAX_PENDING_ITEMS_FOR_SCHEDULE || item == nullptr) {
+        if (this->pending_items->size() < MAX_PENDING_ITEMS_FOR_SCHEDULE && item != nullptr) {
             return false;
         }
 
