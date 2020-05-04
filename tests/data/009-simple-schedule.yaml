@@ -1,4 +1,4 @@
-name: 009-simple-schedule
+name: 009-deferred-schedule
 
 strategy: deferred
 
@@ -102,6 +102,101 @@ buckets:
         gpu: 24
         network: 100
         disk: 8192
+    - resources:
+          cpu: 48
+          memory: 1024000
+          gpu: 21
+          network: 500
+          disk: 128
+    - resources:
+          cpu: 80
+          memory: 128000
+          gpu: 22
+          network: 10000
+          disk: 8192
+    - resources:
+          cpu: 96
+          memory: 32000
+          gpu: 8
+          network: 500
+          disk: 4096
+    - resources:
+          cpu: 128
+          memory: 32000
+          gpu: 16
+          network: 50
+          disk: 512
+    - resources:
+          cpu: 96
+          memory: 256000
+          gpu: 28
+          network: 5000
+          disk: 2048
+    - resources:
+          cpu: 96
+          memory: 32000
+          gpu: 15
+          network: 10000
+          disk: 512
+    - resources:
+          cpu: 80
+          memory: 1024000
+          network: 5000
+          disk: 128
+    - resources:
+          cpu: 64
+          memory: 256000
+          network: 50
+          disk: 1024
+    - resources:
+          cpu: 64
+          memory: 128000
+          gpu: 2
+          network: 50
+          disk: 2048
+    - resources:
+          cpu: 28
+          memory: 64000
+          gpu: 8
+          network: 5000
+          disk: 128
+    - resources:
+          cpu: 28
+          memory: 128000
+          gpu: 17
+          network: 300
+          disk: 1024
+    - resources:
+          cpu: 32
+          memory: 256000
+          gpu: 24
+          network: 500
+          disk: 512
+    - resources:
+          cpu: 48
+          memory: 512000
+          gpu: 31
+          network: 100
+          disk: 1024
+    - resources:
+          cpu: 48
+          memory: 1024000
+          gpu: 12
+          network: 10000
+          disk: 512
+    - resources:
+          cpu: 28
+          memory: 512000
+          gpu: 12
+          network: 300
+          disk: 8192
+    - resources:
+          cpu: 48
+          memory: 32000
+          gpu: 2
+          network: 10000
+          disk: 1024
+
 items:
     - resources:
         cpu: 5
