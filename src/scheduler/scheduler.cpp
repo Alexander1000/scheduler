@@ -346,6 +346,7 @@ namespace Scheduler
             return false;
         }
 
+        std::list<Item*> removeItems;
         std::list<Item*>::iterator itItem;
         for (itItem = this->pending_items->begin(); itItem != this->pending_items->end(); ++itItem) {
             // build matrix
@@ -361,8 +362,12 @@ namespace Scheduler
             Bucket* bucket = this->getBucketByID(bestBucketID);
             if (bucket != nullptr) {
                 this->bindBucketWidthItem(bucket, *itItem);
-                this->pending_items->remove(*itItem);
+                removeItems.push_back(*itItem);
             }
+        }
+
+        for (itItem = removeItems.begin(); itItem != removeItems.end(); ++itItem) {
+            this->pending_items->remove(*itItem);
         }
 
         return false;
